@@ -35,7 +35,7 @@ body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  background-image:url(DarienCombined.jpg);
+  background-image:url(DarienBackdrop.jpg);
   background-size: 100vw;
   overflow: hidden;
 
