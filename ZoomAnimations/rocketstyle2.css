@@ -1,0 +1,83 @@
+.rocket {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  offset-anchor: 50% 50%;
+  offset-rotate: auto var(--rotate);
+  /* offset-path: path('M371.9958,203.0898 C354.2845,201.0433 353.8019,185.2322 351.1953,171.3603 C348.5886,157.4884 343.858,145.5557 344.1361,130.6154 C344.4143,115.675 349.7013,97.72698 343.1346,89.55276 C336.568,81.37854 318.1478,82.97811 302.4529,83.32919 C286.7581,83.68028 273.7885,82.78288 260.4942,79.64674 C247.1998,76.51062 233.5807,71.13577 221.4432,63.94309 C209.3057,56.75041 198.6498,47.73989 187.3607,38.99733 C176.0716,30.25478 164.1493,21.7802 151.0534,17.5504 C137.9575,13.32059 123.6881,13.33558 109.9154,11.10017 C96.14265,8.864759 82.86668,4.37896 69.96472,7.355469 C57.06277,10.33198 44.53484,20.7708 38.19029,34.19108 C31.84574,47.61135 31.68457,64.01309 13.52059,64.0966'); */
+  /* offset-path: path('M20.2 679.7c210.3-19.1 398.9-219.6 236.5-257.5-170.5-16.8-132.5 146.2-6.8 184.7 141.6 55.7 242.3-9.9 215.3-89.3-43.7-94-330-292-85-347.3 135.5-18.7 251 54.7 302.9 141.5 50.2 85 25.5 183.8 136.6 248.6C1000 627 1037.7 427 1039 395.7c20.3-196.6-133.8-218-199.5-170s-11.3 138.5 107 114S1126.7 147.6 1092.6 67c-2.4-12.2-1.4-23.1 9.2-31.8 100.8-49.4 112.2 198.4 239-23.8'); */
+  animation: fly 15s 1 linear;
+  animation-iteration-count: infinite;
+
+}
+
+@keyframes fly {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+output {
+  width: 150px;
+}
+
+:root {
+  --rotate: 0deg;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: 'Gochi Hand', sans-serif;
+  color: #fff;
+  font-size: 130%;
+  letter-spacing: 0.1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-image:url(DarienCombined.jpg);
+  background-size: 100vw;
+  overflow: hidden;
+
+}
+
+.curvesContainer{
+    stroke:rgba(247, 70, 247);
+    border: 3px solid tomato
+}
+
+.curves{
+    visibility: hidden;
+}
+.arrowhead{
+    stroke:"black";
+    stroke-width:"5";
+    fill:"gold" !important;
+    transform:"rotate(90) scale(0.02)";
+}
+
+svg {
+  width: 110vw;
+  height: auto;
+  /* border: 3px solid red; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}
+
+
+
+.arrows{
+ fill:rgba(255, 217, 0, 0.199);
+ stroke:solid black;
+ stroke-width: 100px;
+}
+
+.wind{
+    fill:gold;
+    filter: blur(450px) contrast(3);
+    stroke: 10px solid black;
+}
