@@ -3,7 +3,7 @@ AllGood.json
 guatMex1.jpg
 guatMex2.jpg
 World Tileset Flattened.jpg
-basemaps/*
+basemaps/
 allCrvsOut.json
-!Archive/
+*/!Archive/
 shp/

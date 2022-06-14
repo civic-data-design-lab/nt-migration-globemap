@@ -1,0 +1,79 @@
+.rocket {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  offset-anchor: 50% 50%;
+  offset-rotate: auto var(--rotate);
+  animation: fly 15s 1 linear;
+  animation-iteration-count: infinite;
+
+}
+
+@keyframes fly {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+output {
+  width: 150px;
+}
+
+:root {
+  --rotate: 0deg;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: 'Gochi Hand', sans-serif;
+  color: #fff;
+  font-size: 130%;
+  letter-spacing: 0.1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background-size: 100vw;
+  overflow: hidden;
+
+}
+
+.curvesContainer{
+    stroke:rgba(247, 70, 247);
+    border: 3px solid tomato
+}
+
+.curves{
+    visibility: hidden;
+}
+.arrowhead{
+    stroke:"black";
+    stroke-width:"5";
+    fill:"gold" !important;
+    transform:"rotate(90) scale(0.02)";
+}
+
+svg {
+  width: 110vw;
+  height: auto;
+  /* border: 3px solid red; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+}
+
+
+
+.arrows{
+ fill:rgba(219, 191, 35, 0.815);
+ stroke: rgba(0, 0, 0, 0.699);
+ /* stroke-width: 20px; */
+}
+
+.wind{
+    fill:rgb(248, 247, 168);
+    filter: blur(350px);
+}
