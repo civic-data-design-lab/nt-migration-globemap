@@ -1,5 +1,5 @@
 /* global window */
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
@@ -8,6 +8,7 @@ import {PolygonLayer} from '@deck.gl/layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
 import {_GlobeView as GlobeView} from '@deck.gl/core';
 import {BitmapLayer} from '@deck.gl/layers';
+import {FlyToInterpolator} from 'deck.gl';
 
 // Source data CSV
 const DATA_URL = {
@@ -20,6 +21,9 @@ const DATA_URL = {
   TRIPS_DARIEN: './data/DarienDupPathways.json'
 };
 
+const transition = new FlyToInterpolator()
+
+var counter = 0;
 
 const ambientLight = new AmbientLight({
   color: [255, 255, 255],
@@ -56,11 +60,11 @@ const DEFAULT_THEME = {
   // effects: [postProcessEffect]
 };
 
-const INITIAL_VIEW_STATE = {
-  longitude: -92.142500,
-  latitude: 	14.680503,
-  zoom: 13.25,
-};
+// const INITIAL_VIEW_STATE = {
+//   longitude: -92.142500,
+//   latitude: 	14.680503,
+//   zoom: 13.25,
+// };
 
 // GUAT MEX VIEW STATE:
 // longitude: -92.142500,
@@ -84,12 +88,22 @@ export default function App({
   trips = DATA_URL.TRIPS,
   trailLength = 35,
   trailLengthZoom = 100,
-  initialViewState = INITIAL_VIEW_STATE,
+  // initialViewState = INITIAL_VIEW_STATE,
   // mapStyle = MAP_STYLE,
   theme = DEFAULT_THEME,
   loopLength = 1200000, // unit corresponds to the timestamp in source data
   animationSpeed = 1
 }) {
+
+  const [initialViewState, setInitialViewState] = useState({
+    latitude: -10,
+    longitude: -66,
+    zoom: 1.5,
+    bearing: 0,
+    pitch: 0,
+    
+  });
+
   const [time, setTime] = useState(0);
   const [animation] = useState({});
 
@@ -103,7 +117,97 @@ export default function App({
     return () => window.cancelAnimationFrame(animation.id);
   }, [animation]);
 
+  // set the AFK timeout
+  const idleLimit = 15000; 
 
+  var timeoutReset = useCallback(() => {
+    counter = 0;
+    setInitialViewState({
+      latitude: -10,
+      longitude: -66,
+      zoom: 1.5,
+      pitch: 0,
+      bearing: 0,
+      transitionDuration: 5000,
+      transitionInterpolator: transition
+    })
+  }, []);
+
+  var prevChapter = useCallback(() => {
+
+    myStopFunction()
+    const myTimeout = setTimeout(timeoutReset, idleLimit);
+
+    counter--;
+    setInitialViewState({
+      longitude: -92.142500,
+      latitude: 	14.680503,
+      zoom: 13.25,
+      pitch: 0,
+      bearing: 0,
+      transitionDuration: 5000,
+      transitionInterpolator: transition
+    })
+  }, []);
+
+  var myTimeout = setTimeout(timeoutReset, idleLimit);
+  var nextChapter = useCallback(() => {
+
+    clearTimeout(myTimeout)
+    
+    //Reset
+        if (counter == 4){
+          setInitialViewState({
+            latitude: -10.,
+            longitude: -66.,
+            zoom: 1.5,
+            bearing: 0,
+            pitch: 0,
+            transitionInterpolator: transition
+          })
+    }
+    
+    // GUAT
+    if (counter == 2){
+      setInitialViewState({
+        longitude: -92.142500,
+        latitude: 	14.680503,
+        zoom: 13.25,
+        pitch: 0,
+        bearing: 0,
+        transitionDuration: 5000,
+        transitionInterpolator: transition
+      })
+      }
+    
+    // PANAMA
+    if (counter == 1){
+      setInitialViewState({
+          longitude: -79.8587,
+          latitude: 	8.57329,
+          zoom: 5.5,
+          pitch: 0,
+          bearing: 0,
+          transitionDuration: 1000,
+          transitionInterpolator: transition
+        })
+    }
+
+    //Darien
+    if (counter == 0){
+        setInitialViewState({
+          longitude: -77.02401,
+          latitude: 8.4339855,
+          zoom: 8.25,
+          pitch: 0,
+          bearing: 0,
+          transitionDuration: 5000,
+          transitionInterpolator: transition
+        })
+    }
+    
+    counter++;
+  }, []);
 
   const layers = [
     // This is only needed when using shadow effects
@@ -211,21 +315,26 @@ export default function App({
     //   getFillColor: theme.buildingColor,
     //   material: theme.material
     // }),
-
  
   ];
 
   return (
+    <div>
     <DeckGL
       layers={layers}
       effects={theme.effects}
       views={new GlobeView()}
       initialViewState={initialViewState}
+      // setInitialViewState = {initialViewState}
       controller={true}
-
     >
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
+      <div class='btnContainer'>
+        <button class='btn' onClick={prevChapter}>◀</button>
+        <button class='btn' onClick={nextChapter}>▶</button>
+      </div>
+    </div>
   );
 }
 

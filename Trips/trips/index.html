@@ -8,6 +8,47 @@
     body {margin: 0; font-family: sans-serif; width: 100vw; height: 100vh; overflow: hidden; fill:black; background: black;}
   </style>
 </head>
+<style>
+
+@keyframes glow {
+  0%   {color: none;}
+  25%  {color: white;}
+  50%   {color: white;}
+  100% {color: none;}
+}
+
+  
+  .btnContainer{
+    margin: 0;
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    -ms-transform: translate(-50%, -90%);
+    transform: translate(-50%, -90%);
+    /* border: 1px solid white; */
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .btn{
+    color: none;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    font-size: 1.5em;
+    -webkit-text-stroke: 1px white;
+    transition: 0.25s ease;
+    margin-left: 10em;
+    margin-right:10em;
+    animation: glow 8s infinite;
+    cursor: crosshair;
+
+
+
+  }
+  .btn:hover{
+    color: white;
+  }
+</style>
 <body>
 <div id="app"></div>
 </body>
