@@ -18,7 +18,8 @@ const DATA_URL = {
   // TRIPS: './data/PANAMSINGLE.json', // eslint-disable-line
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
   // TRIPS: './data/debug.json', // eslint-disable-line
-  TRIPS_DARIEN: './data/DarienDupPathways.json'
+  TRIPS_DARIEN: './data/DarienDupPathways.json',
+  TRIPS_GUATMEX: './data/guatMexStreets.json'
 };
 
 const transition = new FlyToInterpolator()
@@ -135,8 +136,8 @@ export default function App({
 
   var prevChapter = useCallback(() => {
 
-    myStopFunction()
-    const myTimeout = setTimeout(timeoutReset, idleLimit);
+    // myStopFunction()
+    // const myTimeout = setTimeout(timeoutReset, idleLimit);
 
     counter--;
     setInitialViewState({
@@ -150,21 +151,21 @@ export default function App({
     })
   }, []);
 
-  var myTimeout = setTimeout(timeoutReset, idleLimit);
+  // var myTimeout = setTimeout(timeoutReset, idleLimit);
   var nextChapter = useCallback(() => {
 
-    clearTimeout(myTimeout)
+    // clearTimeout(myTimeout)
     
     //Reset
-        if (counter == 4){
-          setInitialViewState({
-            latitude: -10.,
-            longitude: -66.,
-            zoom: 1.5,
-            bearing: 0,
-            pitch: 0,
-            transitionInterpolator: transition
-          })
+    if (counter == 4){
+      setInitialViewState({
+        latitude: -10.,
+        longitude: -66.,
+        zoom: 1.5,
+        bearing: 0,
+        pitch: 0,
+        transitionInterpolator: transition
+      })
     }
     
     // GUAT
@@ -303,6 +304,23 @@ export default function App({
         depthTest: false
       }
     }),
+
+    new TripsLayer({
+      id: 'trips-guatMex',
+      data: DATA_URL.TRIPS_GUATMEX,
+      getPath: d => d.path,
+      getTimestamps: d => d.timestamps,
+      getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+      opacity: 0.3,
+      widthMinPixels:5,
+      trailLengthZoom,
+      currentTime: time,
+      shadowEnabled: false,
+      parameters: {
+        depthTest: false
+      }
+    }),
+
 
     // new PolygonLayer({
     //   id: 'buildings',
