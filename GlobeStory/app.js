@@ -211,13 +211,13 @@ export default function App({
 
     new BitmapLayer({
       id: 'BitmapLayer',
-      image: './basemaps/WorldTilesetBlack.jpg',
+      image: './basemaps/CAD/WorldTilesetBlack.jpg',
       bounds: [[-180, -90,-35000], [-180, 90,-35000], [180, 90,-35000], [180, -90,-35000]],
     }),
 
     new BitmapLayer({
       id: 'saBitmap',
-      image: './basemaps/SATilesetBlack.jpg',
+      image: './basemaps/CAD/SATilesetBlack.jpg',
       bounds: [[-125.704377, -58.123691], [-125.704377, 	37.286326], [	-30.290414, 	37.286326], [	-30.290414, -58.123691]],
     }),
 
@@ -373,6 +373,8 @@ export function renderToDOM(container) {
   render(<App />, container);
 }
 
+const parent = document.getElementById('btnContainer')
+
 // export {counter}
 // module.exports = {counter}
 
@@ -398,16 +400,16 @@ export function renderToDOM(container) {
   
 // // }
 
-let myPromise = new Promise(function(myResolve, myReject) {
-  // "Producing Code" (May take some time)
+// let myPromise = new Promise(function(myResolve, myReject) {
+//   // "Producing Code" (May take some time)
   
   
-    myResolve(); // when successful
-    myReject();  // when error
-  });
+//     myResolve(); // when successful
+//     myReject();  // when error
+//   });
   
-  // "Consuming Code" (Must wait for a fulfilled Promise)
-  myPromise.then(
-    function(value) { /* code if successful */ },
-    function(error) { /* code if some error */ }
-  );
+//   // "Consuming Code" (Must wait for a fulfilled Promise)
+//   myPromise.then(
+//     function(value) { /* code if successful */ },
+//     function(error) { /* code if some error */ }
+//   );
