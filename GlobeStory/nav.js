@@ -5,8 +5,8 @@
 // const {counter} = require('./app.js')
 
 // console.log({counter})
-import {counter} from "./app.js"
-console.log(counter)
+// import {counter} from "./app.js"
+// console.log(counter)
 
 temp = [1,1,1,1,1]
 gridLayout = temp.length + 2

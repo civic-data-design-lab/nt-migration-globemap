@@ -7,3 +7,7 @@ basemaps/
 allCrvsOut.json
 */!Archive/
 shp/
+./WindMap/
+WindMap/
+./ZoomAnimations/
+ZoomAnimations/
