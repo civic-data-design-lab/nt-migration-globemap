@@ -27,27 +27,36 @@
     transform: translate(-50%, -90%);
     /* border: 1px solid white; */
     display: inline-grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(7, 1fr);
+    /* border: 1px solid white; */
+    width: 50%;
+    align-items: center;
   }
-
+  
   .btn{
     color: none;
     background-color: rgba(0, 0, 0, 0);
     border: none;
     font-size: 1.5em;
-    -webkit-text-stroke: 1px white;
-    transition: 0.25s ease;
-    margin-left: 10em;
-    margin-right:10em;
-    animation: glow 8s infinite;
+    -webkit-text-stroke: 0.5px rgb(150, 181, 155);
+    transition: 0.25s linear;
     cursor: crosshair;
-
-
+    /* animation: glow 8s infinite; */
+    text-align: center;
+    /* border: 1px solid green; */
 
   }
   .btn:hover{
     color: white;
+    -webkit-text-stroke: 0.5px white;
   }
+
+  .progress{
+    animation: none;
+    font-size: 1.5em;
+  }
+
+
 </style>
 <body>
 <div id="app"></div>
@@ -55,6 +64,6 @@
 <script type="text/javascript" src="app.js"></script>
 <script type="text/javascript">
   App.renderToDOM(document.getElementById('app'));
-  
 </script>
+<script src="nav.js"></script>
 </html>

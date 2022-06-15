@@ -1,6 +1,6 @@
 [
     
-    {"name":"Globe", "latitude": 15, "longitude": 90, "zoom": 0, "duration": 12000},
+    {"name":"Globe", "latitude": 15, "longitude": 90, "zoom": 0, "duration": 5000},
     {"name":"South America", "latitude": -10, "longitude": -66, "zoom": 1.5, "duration": 12000},
     {"name":"Darien", "latitude": 8.4339855, "longitude": -77.02401, "zoom": 8.25, "duration": 5000},
     {"name":"Panama", "latitude": 8.57329, "longitude": -79.8587, "zoom":5.5, "duration": 5000},

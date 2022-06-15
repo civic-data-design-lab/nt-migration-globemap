@@ -1,5 +1,5 @@
 /* global window */
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
@@ -9,21 +9,23 @@ import {TripsLayer} from '@deck.gl/geo-layers';
 import {_GlobeView as GlobeView} from '@deck.gl/core';
 import {BitmapLayer} from '@deck.gl/layers';
 import {FlyToInterpolator} from 'deck.gl';
+import AnimatedArcLayer from './animated-arc-layer';
+import {sliceData, getDate} from './GlobeA/slice-data';
 
 // chapters
 const chapterData = require('./mapChapters.json'); 
+var AFK = true
+var afkTimer = 0
+// set the AFK timeout
+const idleLimit = 10000; 
 
 // Source data CSV
 const DATA_URL = {
   // BUILDINGS:
     // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
-  // TRIPS: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/trips-v7.json' // eslint-disable-line
-  // TRIPS: './data/PANAMSINGLE.json', // eslint-disable-line
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
-  // TRIPS: './data/debug.json', // eslint-disable-line
   TRIPS_DARIEN: './data/DarienDupPathways.json',
   TRIPS_GUATMEX: './data/guatMexStreets.json',
-  MAP_CHAPTERS: './mapChapters.json'
 };
 
 var counter = 0;
@@ -65,17 +67,6 @@ const DEFAULT_THEME = {
   // effects: [postProcessEffect]
 };
 
-// const INITIAL_VIEW_STATE = {
-//   longitude: -92.142500,
-//   latitude: 	14.680503,
-//   zoom: 13.25,
-// };
-
-// GUAT MEX VIEW STATE:
-// longitude: -92.142500,
-// latitude: 	14.680503,
-// zoom: 13.25,
-
 
 // const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
@@ -91,15 +82,17 @@ const DEFAULT_THEME = {
 export default function App({
   // buildings = DATA_URL.BUILDINGS,
   trips = DATA_URL.TRIPS,
-  // chapters = DATA_URL.MAP_CHAPTERS,
   trailLength = 35,
   trailLengthZoom = 100,
   // initialViewState = INITIAL_VIEW_STATE,
   // mapStyle = MAP_STYLE,
   theme = DEFAULT_THEME,
   loopLength = 1200000, // unit corresponds to the timestamp in source data
-  animationSpeed = 1
+  animationSpeed = 1,
+  data
 }) {
+
+  const groups = useMemo(() => sliceData(data), [data]);
 
 
   const [initialViewState, setInitialViewState] = useState({
@@ -122,28 +115,65 @@ export default function App({
     return () => window.cancelAnimationFrame(animation.id);
   }, [animation]);
 
-  // set the AFK timeout
-  const idleLimit = 15000; 
 
+
+  // AFK Timeout
   var timeoutReset = useCallback(() => {
+    // console.log('bang')
     counter = 0;
+
     setInitialViewState({
-      latitude: -10,
-      longitude: -66,
-      zoom: 1.5,
-      pitch: 0,
-      bearing: 0,
-      transitionDuration: 5000,
+      latitude: chapterData[counter].latitude,
+      longitude: chapterData[counter].longitude,
+      zoom: chapterData[counter].zoom,
+      transitionDuration: chapterData[counter].duration,
       transitionInterpolator: transition
     })
-  }, []);
+    
+    }, []);
 
+
+  if(AFK == false){
+    afkTimer++
+    if(afkTimer > idleLimit){
+      setTimeout(timeoutReset,0)
+      AFK = true
+    }
+  }
+
+  // NAVIGATION FORWARD
+  var nextChapter = useCallback(() => {
+
+    // GOOGLE HOW TO GET PENDING TIMEOUTS
+    AFK=false
+    afkTimer = 0
+    counter++;
+  
+    if(counter >= chapterData.length){
+      counter = 0
+    }
+  
+    setInitialViewState({
+      latitude: chapterData[counter].latitude,
+      longitude: chapterData[counter].longitude,
+      zoom: chapterData[counter].zoom,
+      transitionDuration: chapterData[counter].duration,
+      transitionInterpolator: transition
+    })
+    
+    }, []);
+  
+
+  // NAVIGATION BACKWARD
   var prevChapter = useCallback(() => {
 
-    // myStopFunction()
-    // const myTimeout = setTimeout(timeoutReset, idleLimit);
+    AFK=false
+    afkTimer = 0
 
-    counter--;
+    if(counter > 0){
+      counter--
+    }
+
     setInitialViewState({
       latitude: chapterData[counter].latitude,
       longitude: chapterData[counter].longitude,
@@ -152,28 +182,14 @@ export default function App({
       transitionInterpolator: transition
     })
   }, []);
-
-  // var myTimeout = setTimeout(timeoutReset, idleLimit);
-  var nextChapter = useCallback(() => {
-
-    // clearTimeout(myTimeout)
     
-    //Reset
-    // if (counter == 4){
-    //   setInitialViewState({
-    //     latitude: -10.,
-    //     longitude: -66.,
-    //     zoom: 1.5,
-    //     transitionInterpolator: transition
-    //   })
-    // }
 
-    counter++;
+   // NAVIGATION JUMP
+   var jumpToChapter = useCallback(() => {
+    AFK=false
+    afkTimer = 0
 
-    if(counter >= chapterData.length){
-      counter = 0
-    }
-
+    counter = 1;
     setInitialViewState({
         latitude: chapterData[counter].latitude,
         longitude: chapterData[counter].longitude,
@@ -181,7 +197,6 @@ export default function App({
         transitionDuration: chapterData[counter].duration,
         transitionInterpolator: transition
     })
-  
   }, []);
 
   const layers = [
@@ -242,6 +257,7 @@ export default function App({
     //   }
     // }),
 
+    
 
     new TripsLayer({
       id: 'trips',
@@ -258,6 +274,8 @@ export default function App({
       currentTime: time,
       shadowEnabled: false,
       fadeTrail: true,
+      // hover: true,
+      // clickable: true,
       parameters: {
         depthTest: false
       }
@@ -295,7 +313,6 @@ export default function App({
       }
     }),
 
-
     // new PolygonLayer({
     //   id: 'buildings',
     //   data: buildings,
@@ -307,13 +324,34 @@ export default function App({
     //   getFillColor: theme.buildingColor,
     //   material: theme.material
     // }),
- 
+
   ];
+
+  const dataLayers = groups.map(
+    (group, index) =>
+    
+      new AnimatedArcLayer({
+      
+        id: `flights-${index}`,
+        data: group.flights,
+        getSourcePosition: d => [d.lon2, d.lat2, d.alt1],
+        getTargetPosition: d => [d.lon1, d.lat1, d.alt2],
+        getSourceTimestamp: d => d.time1,
+        getTargetTimestamp: d => d.time2,
+        getTilt: d => d.tilt,
+        getHeight: .1,
+        getWidth: .95,   
+        timeRange,
+        getSourceColor: [255, 255, 0],
+        getTargetColor: [255, 255, 255]
+      })
+  );
 
   return (
     <div>
     <DeckGL
-      layers={layers}
+      layers={[layers,dataLayers]}
+      // datalay = {dataLayers}
       effects={theme.effects}
       views={new GlobeView()}
       initialViewState={initialViewState}
@@ -322,8 +360,9 @@ export default function App({
     >
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
-      <div className='btnContainer'>
+      <div className="btnContainer" id='btnContainer'>
         <div className='btn' onClick={prevChapter}>◀</div>
+        {/* <div className='btn progress' onClick={jumpToChapter}>■</div> */}
         <div className='btn' onClick={nextChapter}>▶</div>
       </div>
     </div>
@@ -333,3 +372,27 @@ export default function App({
 export function renderToDOM(container) {
   render(<App />, container);
 }
+
+export {counter}
+
+// document.getElementsByClassName('btnContainer')[0]
+
+// // create progress buttons:
+// const btnCont = document.getElementsByClassName('btnContainer')
+// console.log(btnCont)
+// // console.log(chapterData.length)
+
+// for (let i = 0; i < btnCont.length; i++) {
+//   console.log(chapterData.length)
+//   // const element = btnCont[i];
+  
+// }
+
+// // for (let i = 0; i < chapterData.length; i++) {
+// //   // cont = btnCont[0]
+// //   console.log(btnCont)
+// //   btnCont[0].appendChild(
+// //     square = document.createElement('div')
+// //   )
+  
+// // }
