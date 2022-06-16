@@ -18,6 +18,7 @@ var AFK = true
 var afkTimer = 0
 // set the AFK timeout
 const idleLimit = 10000; 
+var startMapIndex = false 
 
 // Source data CSV
 const DATA_URL = {
@@ -92,13 +93,25 @@ export default function App({
   data
 }) {
 
+  // get start state
+
+  if (startMapIndex == false){
+    for (let i = 0; i < chapterData.length; i++) {
+      if(chapterData[i].name != 'NaN' && startMapIndex == false){
+        startMapIndex = i
+      }
+      
+    }
+  }
+
+
   const groups = useMemo(() => sliceData(data), [data]);
 
 
   const [initialViewState, setInitialViewState] = useState({
-    latitude: chapterData[0].latitude,
-    longitude: chapterData[0].longitude,
-    zoom: chapterData[0].zoom,
+    latitude: chapterData[startMapIndex].latitude,
+    longitude: chapterData[startMapIndex].longitude,
+    zoom: chapterData[startMapIndex].zoom,
     
   });
 
@@ -123,11 +136,12 @@ export default function App({
     counter = 0;
 
     setInitialViewState({
-      latitude: chapterData[counter].latitude,
-      longitude: chapterData[counter].longitude,
-      zoom: chapterData[counter].zoom,
-      transitionDuration: chapterData[counter].duration,
-      transitionInterpolator: transition
+      latitude: chapterData[startMapIndex].latitude,
+      longitude: chapterData[startMapIndex].longitude,
+      zoom: chapterData[startMapIndex].zoom,
+      transitionDuration: chapterData[startMapIndex].duration,
+      transitionInterpolator: transition,
+      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
     })
     
     }, []);
@@ -153,14 +167,45 @@ export default function App({
       counter = 0
     }
   
-    setInitialViewState({
-      latitude: chapterData[counter].latitude,
-      longitude: chapterData[counter].longitude,
-      zoom: chapterData[counter].zoom,
-      transitionDuration: chapterData[counter].duration,
-      transitionInterpolator: transition
-    })
+    if(chapterData[counter].name != 'NaN'){
+      setInitialViewState({
+        latitude: chapterData[counter].latitude,
+        longitude: chapterData[counter].longitude,
+        zoom: chapterData[counter].zoom,
+        transitionDuration: chapterData[counter].duration,
+        transitionInterpolator: transition,
+        transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+      })
+    }
+
+    //toggle narrativeChapters
+    const header = document.getElementById('narrativeText')
+    const sText = document.getElementById('subText')
+    const dText = document.getElementById('description')
+    const narImg = document.getElementById('narrativeImg')
     
+    // toggle narrative and images
+    
+    // default condition
+    // if (counter == 0){
+    //   nar.style.display = 'inherit'
+    //   narImg.style.backgroundImage = ''
+    // }
+    // else {
+    //   nar.style.display
+
+
+    // }
+
+
+    narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
+    header.innerHTML = chapterData[counter].header
+    sText.innerHTML = chapterData[counter].subText
+    dText.innerHTML = chapterData[counter].desc
+
+
+
+
     }, []);
   
 
@@ -179,7 +224,8 @@ export default function App({
       longitude: chapterData[counter].longitude,
       zoom: chapterData[counter].zoom,
       transitionDuration: chapterData[counter].duration,
-      transitionInterpolator: transition
+      transitionInterpolator: transition,
+      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
     })
   }, []);
     
@@ -360,6 +406,14 @@ export default function App({
     >
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
+
+      {/* change this to mapchapter Json Header and subheader and text */}
+      <div id='narrativeContainer'>
+        <div id='narrativeText'>DISTANCE UNKNOWN</div>
+        <div id="subText">RISKS AND OPPORTUNITIES OF MIGRATION IN THE AMERICAS</div>
+        <div id="description"></div>
+      </div>
+      <div id='narrativeImg'></div>
       <div className="btnContainer" id='btnContainer'>
         <div className='btn' onClick={prevChapter}>◀</div>
         {/* <div className='btn progress' onClick={jumpToChapter}>■</div> */}
@@ -373,7 +427,8 @@ export function renderToDOM(container) {
   render(<App />, container);
 }
 
-const parent = document.getElementById('btnContainer')
+// const parent = document.getElementById('btnContainer')
+// console.log(parent)
 
 // export {counter}
 // module.exports = {counter}

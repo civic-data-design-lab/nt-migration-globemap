@@ -1,0 +1,129 @@
+/* fonts */
+@font-face {
+    font-family: SpeziaWide;
+    src: url(fonts/SpeziaWide-Bold.otf);
+  }
+
+@font-face {
+    font-family: SpeziaThin;
+    src: url(fonts/SpeziaCompleteUprightTrial.woff);
+}
+
+
+@keyframes glow {
+    0% {
+        color: none;
+    }
+    25% {
+        color: white;
+    }
+    50% {
+        color: white;
+    }
+    100% {
+        color: none;
+    }
+}
+
+body {
+    /* border: 1px solid white; */
+    height:100vh;
+    width: 100vw;;
+    margin: 0; 
+    overflow: hidden; 
+    fill:black; 
+    background: black;}
+
+
+#narrativeContainer{
+    position: absolute;
+    /* border: 3px solid red; */
+    margin-top: 40vh;
+    margin-left: 5%;
+    width: 20%;
+    /* border: 1px solid white; */
+    /* height: 100vh; */
+}
+
+
+#narrativeText{
+    font-family: SpeziaWide;
+    font-size: 3.25rem;
+    line-height: 3.25rem;
+    color: white;
+    transition: 0.25s ease-in-out;
+}
+    
+
+#subText {
+    font-family: SpeziaThin;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    padding-top: 0.125rem;
+    padding-left: 0.125rem;
+    color: white;
+    transition: 0.25s ease-in-out;
+}
+
+#description{
+    font-family: SpeziaThin;
+    color: white;
+    transition: 0.25s ease-in-out;
+}
+
+#narrativeImg {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    /* background-color: red; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 0;
+    margin-left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    background-image: url("");
+    background-size: cover;
+    /* display: none; */
+    transition: 0.5s ease-in-out;
+}
+
+
+
+#btnContainer {
+    margin: 0;
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    -ms-transform: translate(-50%, -90%);
+    transform: translate(-50%, -90%);
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 50%;
+    align-items: center;
+}
+
+.btn {
+    color: none;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    font-size: 1.5em;
+    -webkit-text-stroke: 0.5px rgb(150, 181, 155);
+    transition: 0.25s linear;
+    cursor: crosshair;
+    /* animation: glow 8s infinite; */
+    text-align: center;
+    width: 50%;
+
+}
+
+.btn:hover {
+    color: white;
+    -webkit-text-stroke: 0.5px white;
+}
+
+.progress {
+    background-color: none;
+}

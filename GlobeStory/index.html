@@ -4,60 +4,8 @@
   <meta charset="utf-8">
   <title>deck.gl Example</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {margin: 0; font-family: sans-serif; width: 100vw; height: 100vh; overflow: hidden; fill:black; background: black;}
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
-<style>
-
-@keyframes glow {
-  0%   {color: none;}
-  25%  {color: white;}
-  50%   {color: white;}
-  100% {color: none;}
-}
-
-  
-  .btnContainer{
-    margin: 0;
-    position: absolute;
-    top: 90%;
-    left: 50%;
-    -ms-transform: translate(-50%, -90%);
-    transform: translate(-50%, -90%);
-    /* border: 1px solid white; */
-    display: inline-grid;
-    grid-template-columns: repeat(7, 1fr);
-    /* border: 1px solid white; */
-    width: 50%;
-    align-items: center;
-  }
-  
-  .btn{
-    color: none;
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
-    font-size: 1.5em;
-    -webkit-text-stroke: 0.5px rgb(150, 181, 155);
-    transition: 0.25s linear;
-    cursor: crosshair;
-    /* animation: glow 8s infinite; */
-    text-align: center;
-    /* border: 1px solid green; */
-
-  }
-  .btn:hover{
-    color: white;
-    -webkit-text-stroke: 0.5px white;
-  }
-
-  .progress{
-    animation: none;
-    font-size: 1.5em;
-  }
-
-
-</style>
 <body>
 <div id="app"></div>
 </body>
