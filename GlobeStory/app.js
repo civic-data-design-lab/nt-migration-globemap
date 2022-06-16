@@ -4,13 +4,16 @@ import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
-import {PolygonLayer} from '@deck.gl/layers';
+import {PolygonLayer, TextLayer} from '@deck.gl/layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
 import {_GlobeView as GlobeView} from '@deck.gl/core';
 import {BitmapLayer} from '@deck.gl/layers';
 import {FlyToInterpolator} from 'deck.gl';
 import AnimatedArcLayer from './animated-arc-layer';
-import {sliceData, getDate} from './GlobeA/slice-data';
+import {sliceData, getDate} from './slice-data';
+import {load} from '@loaders.gl/core';
+import {CSVLoader} from '@loaders.gl/csv';
+import RangeInput from './range-input';
 
 // chapters
 const chapterData = require('./mapChapters.json'); 
@@ -29,10 +32,12 @@ const DATA_URL = {
   TRIPS_GUATMEX: './data/guatMexStreets.json',
 };
 
+const DATA_GLOBE = './data';
+
 var counter = 0;
 const transition = new FlyToInterpolator()
 
-
+const TIME_WINDOW = 50; // 15 minutes
 const ambientLight = new AmbientLight({
   color: [255, 255, 255],
   intensity: 1.0
@@ -93,6 +98,7 @@ export default function App({
   data
 }) {
 
+// <<<<<<< Updated upstream
   // get start state
 
   if (startMapIndex == false){
@@ -104,8 +110,21 @@ export default function App({
     }
   }
 
+// =======
+const [currentTime, setCurrentTime] = useState(0);
+// >>>>>>> Stashed changes
 
   const groups = useMemo(() => sliceData(data), [data]);
+
+  const endTime = useMemo(() => {
+    return groups.reduce((max, group) => Math.max(max, group.endTime), 0);
+  }, [groups]);
+
+  const timeRange = [currentTime, currentTime + TIME_WINDOW];
+const [glContext, setGLContext] = useState();
+  const formatLabel = useCallback(t => getDate(data, t).toUTCString(), [data]);
+  
+
 
 
   const [initialViewState, setInitialViewState] = useState({
@@ -358,6 +377,22 @@ export default function App({
         depthTest: false
       }
     }),
+    
+new TextLayer({
+    id: 'text-layer',
+    data: './data/layers/nat.json',
+    fontFamily: 'Arial',
+    pickable: false,
+    getPosition: d => [d.lon1, d.lat1],
+    getText: d => d.Nationality,
+    getSize: 6,
+    getColor: [255, 255, 255],
+    getAngle: 0, 
+    getPixelOffset: [-5,-1],
+    fontWeight: 'normal',
+    getTextAnchor: 'end',
+    getAlignmentBaseline: 'bottom'
+  }),
 
     // new PolygonLayer({
     //   id: 'buildings',
@@ -385,8 +420,8 @@ export default function App({
         getSourceTimestamp: d => d.time1,
         getTargetTimestamp: d => d.time2,
         getTilt: d => d.tilt,
-        getHeight: .1,
-        getWidth: .95,   
+        getHeight: .2,
+        getWidth: 1,   
         timeRange,
         getSourceColor: [255, 255, 0],
         getTargetColor: [255, 255, 255]
@@ -397,13 +432,22 @@ export default function App({
     <div>
     <DeckGL
       layers={[layers,dataLayers]}
-      // datalay = {dataLayers}
       effects={theme.effects}
       views={new GlobeView()}
       initialViewState={initialViewState}
       // setInitialViewState = {initialViewState}
       controller={true}
     >
+    {endTime && (
+      <RangeInput
+          min={500}
+          max={endTime}
+          value={currentTime}
+          animationSpeed={TIME_WINDOW * 0.3}
+          formatLabel={formatLabel}
+          onChange={setCurrentTime}
+          
+        />)}
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
 
@@ -425,7 +469,22 @@ export default function App({
 
 export function renderToDOM(container) {
   render(<App />, container);
-}
+
+
+  async function loadData(dates) {
+    const data = [];
+    for (const date of dates) {
+      const url = `${DATA_GLOBE}/${date}.csv`;
+      const flights = await load(url, CSVLoader, {csv: {skipEmptyLines: true}});
+      data.push({flights, date});
+      render(<App data={data} />, container);
+    }
+  }
+  
+
+  loadData([
+    '2020-01-14'
+  ]);}
 
 // const parent = document.getElementById('btnContainer')
 // console.log(parent)
