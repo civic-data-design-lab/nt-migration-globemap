@@ -56,9 +56,6 @@ export default function RangeInput({ max, value, animationSpeed, onChange, forma
   return (
     <>
 
-
-
-      />
     </>
     
   );

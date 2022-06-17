@@ -25,6 +25,15 @@
     }
 }
 
+@keyframes typewriter{
+    from{width: 0;}
+    to{width: 24em;}
+  }
+  @keyframes blinkTextCursor{
+    from{color: rgba(255,255,255,.75);}
+    to{color: transparent;}
+  }
+
 body {
     /* border: 1px solid white; */
     height:100vh;
@@ -45,6 +54,10 @@ body {
     /* height: 100vh; */
 }
 
+#narrativeContainer *{
+    pointer-events: none;
+}
+
 
 #narrativeText{
     font-family: SpeziaWide;
@@ -53,20 +66,28 @@ body {
     color: white;
     transition: 0.25s ease-in-out;
 }
-    
+
+#flare{
+    font-family: SpeziaThin;
+    font-size: 3.25rem;
+    line-height: 3.25rem;
+    color: white;
+    animation: normal both,
+    blinkTextCursor 500ms steps(44) infinite normal;
+}
 
 #subText {
-    font-family: SpeziaThin;
-    font-size: 1.25rem;
-    line-height: 1.5rem;
-    padding-top: 0.125rem;
+    font-family: SpeziaWide;
+    font-size: 1rem;
+    line-height: 1.4rem;
+    padding-top: 0.25rem;
     padding-left: 0.125rem;
     color: white;
     transition: 0.25s ease-in-out;
 }
 
 #description{
-    font-family: SpeziaThin;
+    font-family: SpeziaWide;
     color: white;
     transition: 0.25s ease-in-out;
 }
@@ -75,8 +96,6 @@ body {
     position: absolute;
     width: 100vw;
     height: 100vh;
-    /* background-color: red; */
-    position: absolute;
     top: 0;
     left: 0;
     margin-top: 0;
@@ -84,12 +103,14 @@ body {
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    background-image: url("");
-    background-size: cover;
-    /* display: none; */
+    background-image: url("img/placeholder.png");
+    background-size: contain;
     transition: 0.5s ease-in-out;
-}
+    opacity: 1;
 
+    /* border: 3px solid blue; */
+
+}
 
 
 #btnContainer {
@@ -126,4 +147,22 @@ body {
 
 .progress {
     background-color: none;
+}
+.line-1{
+    position: relative;
+    top: 50%;  
+    width: 24em;
+    margin: 0 auto;
+    border-right: 2px solid rgba(255,255,255,.75);
+    font-size: 180%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translateY(-50%);    
+}
+
+/* Animation */
+.anim-typewriter{
+  animation: typewriter 4s steps(44) 1s 1 normal both,
+             blinkTextCursor 1000ms steps(44) infinite normal;
 }

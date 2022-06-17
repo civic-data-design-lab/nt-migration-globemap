@@ -4,19 +4,22 @@ import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
-import {PolygonLayer, TextLayer} from '@deck.gl/layers';
+import {PolygonLayer, TextLayer, PathLayer,GeoJsonLayer} from '@deck.gl/layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
 import {_GlobeView as GlobeView} from '@deck.gl/core';
 import {BitmapLayer} from '@deck.gl/layers';
-import {FlyToInterpolator} from 'deck.gl';
+import {FlyToInterpolator, LinearInterpolator} from 'deck.gl';
 import AnimatedArcLayer from './animated-arc-layer';
 import {sliceData, getDate} from './slice-data';
 import {load} from '@loaders.gl/core';
 import {CSVLoader} from '@loaders.gl/csv';
 import RangeInput from './range-input';
+import {PathStyleExtension} from '@deck.gl/extensions';
+import {TileLayer} from '@deck.gl/geo-layers';
 
 // chapters
-const chapterData = require('./mapChapters.json'); 
+const chapterData = require('./mapChapters.json');
+const tempData = require('./data/tmpLayers/accumulatedCost.json');
 var AFK = true
 var afkTimer = 0
 // set the AFK timeout
@@ -30,17 +33,18 @@ const DATA_URL = {
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
   TRIPS_DARIEN: './data/DarienDupPathways.json',
   TRIPS_GUATMEX: './data/guatMexStreets.json',
+  PATH_COST: './data/FULLPATH.json',
 };
 
 const DATA_GLOBE = './data';
 
 var counter = 0;
 const transition = new FlyToInterpolator()
-
 const TIME_WINDOW = 50; // 15 minutes
 const ambientLight = new AmbientLight({
   color: [255, 255, 255],
   intensity: 1.0
+
 });
 
 const pointLight = new PointLight({
@@ -93,14 +97,12 @@ export default function App({
   // initialViewState = INITIAL_VIEW_STATE,
   // mapStyle = MAP_STYLE,
   theme = DEFAULT_THEME,
-  loopLength = 1200000, // unit corresponds to the timestamp in source data
+  loopLength = 120000, // unit corresponds to the timestamp in source data
   animationSpeed = 1,
   data
 }) {
 
-// <<<<<<< Updated upstream
   // get start state
-
   if (startMapIndex == false){
     for (let i = 0; i < chapterData.length; i++) {
       if(chapterData[i].name != 'NaN' && startMapIndex == false){
@@ -110,18 +112,14 @@ export default function App({
     }
   }
 
-// =======
 const [currentTime, setCurrentTime] = useState(0);
-// >>>>>>> Stashed changes
-
   const groups = useMemo(() => sliceData(data), [data]);
-
   const endTime = useMemo(() => {
     return groups.reduce((max, group) => Math.max(max, group.endTime), 0);
   }, [groups]);
 
   const timeRange = [currentTime, currentTime + TIME_WINDOW];
-const [glContext, setGLContext] = useState();
+  const [glContext, setGLContext] = useState();
   const formatLabel = useCallback(t => getDate(data, t).toUTCString(), [data]);
   
 
@@ -151,7 +149,6 @@ const [glContext, setGLContext] = useState();
 
   // AFK Timeout
   var timeoutReset = useCallback(() => {
-    // console.log('bang')
     counter = 0;
 
     setInitialViewState({
@@ -164,7 +161,6 @@ const [glContext, setGLContext] = useState();
     })
     
     }, []);
-
 
   if(AFK == false){
     afkTimer++
@@ -181,12 +177,23 @@ const [glContext, setGLContext] = useState();
     AFK=false
     afkTimer = 0
     counter++;
-  
+
     if(counter >= chapterData.length){
+      // RESET STORY AFTER COMPLETING NARRATIVE
+      setInitialViewState({
+        latitude: chapterData[startMapIndex].latitude,
+        longitude: chapterData[startMapIndex].longitude,
+        zoom: chapterData[startMapIndex].zoom,
+        transitionDuration: chapterData[startMapIndex].duration,
+        transitionInterpolator: transition,
+        transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+      })
+
       counter = 0
     }
     
   
+    // CHANGE CAMERA VIEW THROUGH STORY
     if(chapterData[counter].name != 'NaN'){
       setInitialViewState({
         latitude: chapterData[counter].latitude,
@@ -200,38 +207,52 @@ const [glContext, setGLContext] = useState();
 
     //toggle narrativeChapters
     const header = document.getElementById('narrativeText')
+    const _flare = document.getElementById('flare')
     const sText = document.getElementById('subText')
     const dText = document.getElementById('description')
     const narImg = document.getElementById('narrativeImg')
-    
-    // toggle narrative and images
-    
-    // default condition
-    // if (counter == 0){
-    //   nar.style.display = 'inherit'
-    //   narImg.style.backgroundImage = ''
-    // }
-    // else {
-    //   nar.style.display
-
-
-    // }
-
-
     narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
-    header.innerHTML = chapterData[counter].header
-    sText.innerHTML = chapterData[counter].subText
+    
+
+    if(chapterData[counter].header==""){
+      _flare.innerHTML = ""
+    }
+    else{
+      _flare.innerHTML = "|"
+    }
+
+
+    // var txt = chapterData[counter].header;
+    var hlen=0
+    var slen=0
+    var typeSpeed =150;
+    header.innerHTML = ""
+    sText.innerHTML = ""
+
+    typeWriter()
+    function typeWriter() {
+    if (hlen < chapterData[counter].header.length) {
+      header.innerHTML += chapterData[counter].header.charAt(hlen);
+      hlen++;
+    setTimeout(typeWriter, typeSpeed);
+    }
+
+    if (slen < chapterData[counter].subText.length) {
+      sText.innerHTML += chapterData[counter].subText.charAt(slen);
+      slen++;
+    setTimeout(typeWriter, typeSpeed);
+    }
+    }
+
+
     dText.innerHTML = chapterData[counter].desc
 
-
-
+    console.log(counter)
 
     }, []);
-  
 
   // NAVIGATION BACKWARD
   var prevChapter = useCallback(() => {
-
     AFK=false
     afkTimer = 0
 
@@ -247,6 +268,18 @@ const [glContext, setGLContext] = useState();
       transitionInterpolator: transition,
       transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
     })
+
+    
+    //toggle narrativeChapters
+    const header = document.getElementById('narrativeText')
+    const sText = document.getElementById('subText')
+    const dText = document.getElementById('description')
+    const narImg = document.getElementById('narrativeImg')
+    narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
+    header.innerHTML = chapterData[counter].header
+    sText.innerHTML = chapterData[counter].subText
+    dText.innerHTML = chapterData[counter].desc
+
   }, []);
     
 
@@ -266,6 +299,7 @@ const [glContext, setGLContext] = useState();
   }, []);
 
   const layers = [
+
     // This is only needed when using shadow effects
     // new PolygonLayer({
     //   id: 'ground',
@@ -275,22 +309,60 @@ const [glContext, setGLContext] = useState();
     //   getFillColor: [0, 0, 0, 0]
     // }),
 
+    // new TileLayer({
+    //   data: 'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/1/1/0@2x?access_token=pk.eyJ1IjoibWl0Y2l2aWNkYXRhIiwiYSI6ImNpbDQ0aGR0djN3MGl1bWtzaDZrajdzb28ifQ.quOF41LsLB5FdjnGLwbrrg&zoomwheel=true&fresh=true#3.92/5.14/-69.46',
+    //   minZoom: 0,
+    //   maxZoom: 19,
+    //   tileSize: 1080,
+  
+    //   renderSubLayers: props => {
+    //     const {
+    //       bbox: {west, south, east, north}
+    //     } = props.tile;
+  
+    //     return new BitmapLayer(props, {
+    //       data: null,
+    //       image: props.data,
+    //       bounds: [west, south, east, north]
+    //     });
+    //   }
+    // }),
+
+    // new GeoJsonLayer({
+    //   id: 'earth-land',
+    //   data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson',
+    //   // Styles
+    //   stroked: true,
+    //   filled: true,
+    //   // opacity: 1,
+    //   getStrokeColor: [255,255,255],
+    //   getLineWidth:5,
+    //   getFillColor: [0,0,0],
+    //   parameters:{
+    //     cull:true
+    //   }
+    // }),
+
     new BitmapLayer({
       id: 'BitmapLayer',
       image: './basemaps/CAD/WorldTilesetBlack.jpg',
       bounds: [[-180, -90,-35000], [-180, 90,-35000], [180, 90,-35000], [180, -90,-35000]],
+      visible: chapterData[counter].worldTile,
+      // opacity: opacityRamp
     }),
 
     new BitmapLayer({
       id: 'saBitmap',
       image: './basemaps/CAD/SATilesetBlack.jpg',
       bounds: [[-125.704377, -58.123691], [-125.704377, 	37.286326], [	-30.290414, 	37.286326], [	-30.290414, -58.123691]],
+      visible: chapterData[counter].SaTile,
     }),
 
     new BitmapLayer({
       id: 'panamaBitmap',
       image: './basemaps/CAD/03a.jpeg',
       bounds: [[	-84.071066,6.204412], [-84.071066,10.942168], [-75.646334,10.942168], [-75.646334,6.204412]],
+      visible: chapterData[counter].PanamaImg,
       parameters: {
         depthTest: false
       }
@@ -300,6 +372,7 @@ const [glContext, setGLContext] = useState();
       id: 'darienBitmap',
       image: './basemaps/CAD/01a.jpeg',
       bounds: [[-77.664696,8.078343], [-77.664696,8.789628], [-76.383324,8.789628], [-76.383324,8.078343]],
+      visible: chapterData[counter].DarienImg,
       parameters: {
         depthTest: false
       }
@@ -309,21 +382,24 @@ const [glContext, setGLContext] = useState();
       id: 'GuatMexBitmap1',
       image: './basemaps/CAD/02a.jpeg',
       bounds: [[-92.168185,14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
+      visible: chapterData[counter].GuatMexImg,
       parameters: {
         depthTest: false
       }
     }),
 
-    // new BitmapLayer({
-    //   id: 'GuatMexBitmap2',
-    //   image: './basemaps/guatMex2.jpg',
-    //   bounds: [[	-92.142885,14.663715], [	-92.142885, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
-    //   parameters: {
-    //     depthTest: false
-    //   }
-    // }),
-
-    
+    new PathLayer({
+      id: 'accumulatedCost',
+      data: DATA_URL.PATH_COST,
+      widthScale: 3,
+      widthMinPixels: 2,
+      getPath: d => d.path,
+      getColor: [255,255,255,255],
+      getDashArray: [4, 5],
+      dashJustified: false,
+      extensions: [new PathStyleExtension({highPrecisionDash: true})],
+  
+    }),
 
     new TripsLayer({
       id: 'trips',
@@ -340,11 +416,11 @@ const [glContext, setGLContext] = useState();
       currentTime: time,
       shadowEnabled: false,
       fadeTrail: true,
-      // hover: true,
-      // clickable: true,
+      visible: chapterData[counter].trips,
       parameters: {
         depthTest: false
       }
+      
     }),
 
     new TripsLayer({
@@ -358,6 +434,7 @@ const [glContext, setGLContext] = useState();
       trailLengthZoom,
       currentTime: time,
       shadowEnabled: false,
+      visible: chapterData[counter].TripsDarien,
       parameters: {
         depthTest: false
       }
@@ -374,6 +451,7 @@ const [glContext, setGLContext] = useState();
       trailLengthZoom,
       currentTime: time,
       shadowEnabled: false,
+      visible: chapterData[counter].TripsDarien,
       parameters: {
         depthTest: false
       }
@@ -392,7 +470,9 @@ new TextLayer({
     getPixelOffset: [-5,-1],
     fontWeight: 'bold',
     getTextAnchor: 'end',
-    getAlignmentBaseline: 'bottom'
+    getAlignmentBaseline: 'bottom',
+    visible: chapterData[counter].Countries
+
   }),
 
     // new PolygonLayer({
@@ -425,7 +505,8 @@ new TextLayer({
         getWidth: 1,   
         timeRange,
         getSourceColor: [255, 255, 0],
-        getTargetColor: [255, 255, 255]
+        getTargetColor: [255, 255, 255],
+        visible: chapterData[counter].AnimatedArcs
       })
   );
 
@@ -433,15 +514,16 @@ new TextLayer({
     <div>
     <DeckGL
       layers={[layers,dataLayers]}
+      // layers={[layers]}
       effects={theme.effects}
       views={new GlobeView()}
       initialViewState={initialViewState}
-      // setInitialViewState = {initialViewState}
       controller={true}
     >
     {endTime && (
       <RangeInput
-          min={500}
+          activate={true}
+          min={50}
           max={endTime}
           value={currentTime}
           animationSpeed={TIME_WINDOW * 0.2}
@@ -451,17 +533,14 @@ new TextLayer({
         />)}
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
-
-      {/* change this to mapchapter Json Header and subheader and text */}
+      <div id='narrativeImg'></div>
       <div id='narrativeContainer'>
-        <div id='narrativeText'>DISTANCE UNKNOWN</div>
-        <div id="subText">RISKS AND OPPORTUNITIES OF MIGRATION IN THE AMERICAS</div>
+        <span id='narrativeText' >DISTANCE UNKNOWN</span><span id='flare'>|</span>
+        <div id="subText" >RISKS AND OPPORTUNITIES OF MIGRATION IN THE AMERICAS</div>
         <div id="description"></div>
       </div>
-      <div id='narrativeImg'></div>
       <div className="btnContainer" id='btnContainer'>
         <div className='btn' onClick={prevChapter}>◀</div>
-        {/* <div className='btn progress' onClick={jumpToChapter}>■</div> */}
         <div className='btn' onClick={nextChapter}>▶</div>
         
       </div>
@@ -487,45 +566,3 @@ export function renderToDOM(container) {
   loadData([
     '2020-01-14'
   ]);}
-
-// const parent = document.getElementById('btnContainer')
-// console.log(parent)
-
-// export {counter}
-// module.exports = {counter}
-
-// document.getElementsByClassName('btnContainer')[0]
-
-// // create progress buttons:
-// const btnCont = document.getElementsByClassName('btnContainer')
-// console.log(btnCont)
-// // console.log(chapterData.length)
-
-// for (let i = 0; i < btnCont.length; i++) {
-//   console.log(chapterData.length)
-//   // const element = btnCont[i];
-  
-// }
-
-// // for (let i = 0; i < chapterData.length; i++) {
-// //   // cont = btnCont[0]
-// //   console.log(btnCont)
-// //   btnCont[0].appendChild(
-// //     square = document.createElement('div')
-// //   )
-  
-// // }
-
-// let myPromise = new Promise(function(myResolve, myReject) {
-//   // "Producing Code" (May take some time)
-  
-  
-//     myResolve(); // when successful
-//     myReject();  // when error
-//   });
-  
-//   // "Consuming Code" (Must wait for a fulfilled Promise)
-//   myPromise.then(
-//     function(value) { /* code if successful */ },
-//     function(error) { /* code if some error */ }
-//   );
