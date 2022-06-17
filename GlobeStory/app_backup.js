@@ -21,7 +21,6 @@ var AFK = true
 var afkTimer = 0
 // set the AFK timeout
 const idleLimit = 10000; 
-var startMapIndex = false 
 
 // Source data CSV
 const DATA_URL = {
@@ -98,21 +97,7 @@ export default function App({
   data
 }) {
 
-// <<<<<<< Updated upstream
-  // get start state
-
-  if (startMapIndex == false){
-    for (let i = 0; i < chapterData.length; i++) {
-      if(chapterData[i].name != 'NaN' && startMapIndex == false){
-        startMapIndex = i
-      }
-      
-    }
-  }
-
-// =======
 const [currentTime, setCurrentTime] = useState(0);
-// >>>>>>> Stashed changes
 
   const groups = useMemo(() => sliceData(data), [data]);
 
@@ -128,9 +113,9 @@ const [glContext, setGLContext] = useState();
 
 
   const [initialViewState, setInitialViewState] = useState({
-    latitude: chapterData[startMapIndex].latitude,
-    longitude: chapterData[startMapIndex].longitude,
-    zoom: chapterData[startMapIndex].zoom,
+    latitude: chapterData[0].latitude,
+    longitude: chapterData[0].longitude,
+    zoom: chapterData[0].zoom,
     
   });
 
@@ -155,12 +140,11 @@ const [glContext, setGLContext] = useState();
     counter = 0;
 
     setInitialViewState({
-      latitude: chapterData[startMapIndex].latitude,
-      longitude: chapterData[startMapIndex].longitude,
-      zoom: chapterData[startMapIndex].zoom,
-      transitionDuration: chapterData[startMapIndex].duration,
-      transitionInterpolator: transition,
-      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+      latitude: chapterData[counter].latitude,
+      longitude: chapterData[counter].longitude,
+      zoom: chapterData[counter].zoom,
+      transitionDuration: chapterData[counter].duration,
+      transitionInterpolator: transition
     })
     
     }, []);
@@ -185,47 +169,15 @@ const [glContext, setGLContext] = useState();
     if(counter >= chapterData.length){
       counter = 0
     }
-    
   
-    if(chapterData[counter].name != 'NaN'){
-      setInitialViewState({
-        latitude: chapterData[counter].latitude,
-        longitude: chapterData[counter].longitude,
-        zoom: chapterData[counter].zoom,
-        transitionDuration: chapterData[counter].duration,
-        transitionInterpolator: transition,
-        transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
-      })
-    }
-
-    //toggle narrativeChapters
-    const header = document.getElementById('narrativeText')
-    const sText = document.getElementById('subText')
-    const dText = document.getElementById('description')
-    const narImg = document.getElementById('narrativeImg')
+    setInitialViewState({
+      latitude: chapterData[counter].latitude,
+      longitude: chapterData[counter].longitude,
+      zoom: chapterData[counter].zoom,
+      transitionDuration: chapterData[counter].duration,
+      transitionInterpolator: transition
+    })
     
-    // toggle narrative and images
-    
-    // default condition
-    // if (counter == 0){
-    //   nar.style.display = 'inherit'
-    //   narImg.style.backgroundImage = ''
-    // }
-    // else {
-    //   nar.style.display
-
-
-    // }
-
-
-    narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
-    header.innerHTML = chapterData[counter].header
-    sText.innerHTML = chapterData[counter].subText
-    dText.innerHTML = chapterData[counter].desc
-
-
-
-
     }, []);
   
 
@@ -244,8 +196,7 @@ const [glContext, setGLContext] = useState();
       longitude: chapterData[counter].longitude,
       zoom: chapterData[counter].zoom,
       transitionDuration: chapterData[counter].duration,
-      transitionInterpolator: transition,
-      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+      transitionInterpolator: transition
     })
   }, []);
     
@@ -386,11 +337,11 @@ new TextLayer({
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality,
-    getSize: 10,
+    getSize: 6,
     getColor: [255, 255, 255],
     getAngle: 0, 
     getPixelOffset: [-5,-1],
-    fontWeight: 'bold',
+    fontWeight: 'normal',
     getTextAnchor: 'end',
     getAlignmentBaseline: 'bottom'
   }),
@@ -444,26 +395,17 @@ new TextLayer({
           min={500}
           max={endTime}
           value={currentTime}
-          animationSpeed={TIME_WINDOW * 0.2}
-//           formatLabel={formatLabel}
+          animationSpeed={TIME_WINDOW * 0.3}
+          formatLabel={formatLabel}
           onChange={setCurrentTime}
           
         />)}
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
     </DeckGL>
-
-      {/* change this to mapchapter Json Header and subheader and text */}
-      <div id='narrativeContainer'>
-        <div id='narrativeText'>DISTANCE UNKNOWN</div>
-        <div id="subText">RISKS AND OPPORTUNITIES OF MIGRATION IN THE AMERICAS</div>
-        <div id="description"></div>
-      </div>
-      <div id='narrativeImg'></div>
       <div className="btnContainer" id='btnContainer'>
         <div className='btn' onClick={prevChapter}>◀</div>
         {/* <div className='btn progress' onClick={jumpToChapter}>■</div> */}
         <div className='btn' onClick={nextChapter}>▶</div>
-        
       </div>
     </div>
   );
@@ -488,8 +430,7 @@ export function renderToDOM(container) {
     '2020-01-14'
   ]);}
 
-// const parent = document.getElementById('btnContainer')
-// console.log(parent)
+const parent = document.getElementById('btnContainer')
 
 // export {counter}
 // module.exports = {counter}

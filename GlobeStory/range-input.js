@@ -26,7 +26,7 @@ import React, {useEffect, useState} from 'react';
 //   }
 // })(Slider);
 
-export default function RangeInput({min, max, value, animationSpeed, onChange, formatLabel}) {
+export default function RangeInput({ max, value, animationSpeed, onChange, formatLabel}) {
   const [isPlaying, setIsPlaying] = useState(true);
   
 
@@ -56,7 +56,7 @@ export default function RangeInput({min, max, value, animationSpeed, onChange, f
   return (
     <>
 
-       
+
 
       />
     </>
