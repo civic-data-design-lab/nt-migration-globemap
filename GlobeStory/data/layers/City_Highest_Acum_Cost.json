@@ -1,0 +1,804 @@
+{
+  "displayFieldName" : "",
+  "hasZ" : true,
+  "fieldAliases" : {
+    "FID" : "FID",
+    "Name" : "Name",
+    "Acum_Cost_" : "Acum_Cost_"
+  },
+  "geometryType" : "esriGeometryPoint",
+  "spatialReference" : {
+    "wkid" : 4326,
+    "latestWkid" : 4326,
+    "vcsWkid" : 5773,
+    "latestVcsWkid" : 5773
+  },
+  "fields" : [
+    {
+      "name" : "FID",
+      "type" : "esriFieldTypeOID",
+      "alias" : "FID"
+    },
+    {
+      "name" : "Name",
+      "type" : "esriFieldTypeString",
+      "alias" : "Name",
+      "length" : 254
+    },
+    {
+      "name" : "Acum_Cost_",
+      "type" : "esriFieldTypeSingle",
+      "alias" : "Acum_Cost_"
+    }
+  ],
+  "features" : [
+    {
+      "attributes" : {
+        "FID" : 0,
+        "Name" : "Necoclí, Colombia",
+        "Acum_Cost_" : 563
+      },
+      "geometry" : {
+        "x" : -76.787677999999971,
+        "y" : 8.4271740000000364,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 1,
+        "Name" : "Capurganá, Colombia",
+        "Acum_Cost_" : 763
+      },
+      "geometry" : {
+        "x" : -77.34913309999996,
+        "y" : 8.6341284000000655,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 2,
+        "Name" : "Armila, Panama",
+        "Acum_Cost_" : 813
+      },
+      "geometry" : {
+        "x" : -77.450562999999988,
+        "y" : 8.6630290000000514,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 3,
+        "Name" : "Bajo Chiquito, Panama",
+        "Acum_Cost_" : 863
+      },
+      "geometry" : {
+        "x" : -77.690818999999976,
+        "y" : 8.4718780000000606,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 4,
+        "Name" : "Meteti, Panama",
+        "Acum_Cost_" : 863
+      },
+      "geometry" : {
+        "x" : -77.978231999999934,
+        "y" : 8.4981538000000683,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 5,
+        "Name" : "Chiriqui, Panama",
+        "Acum_Cost_" : 903
+      },
+      "geometry" : {
+        "x" : -82.280054599999971,
+        "y" : 8.3866964000000621,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 6,
+        "Name" : "Choluteca, Honduras",
+        "Acum_Cost_" : 976
+      },
+      "geometry" : {
+        "x" : -87.162234399999988,
+        "y" : 13.319857200000058,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 7,
+        "Name" : "Chiquimula, Guatemala",
+        "Acum_Cost_" : 1034
+      },
+      "geometry" : {
+        "x" : -89.545045799999968,
+        "y" : 14.792489700000033,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 8,
+        "Name" : "Guatemala City, Guatemala",
+        "Acum_Cost_" : 1047
+      },
+      "geometry" : {
+        "x" : -90.506882399999938,
+        "y" : 14.634914900000069,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 9,
+        "Name" : "Ciudad Hidalgo, Mexico",
+        "Acum_Cost_" : 1164
+      },
+      "geometry" : {
+        "x" : -92.152595899999938,
+        "y" : 14.679627900000071,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 10,
+        "Name" : "Tumaco, Colombia",
+        "Acum_Cost_" : 365
+      },
+      "geometry" : {
+        "x" : -78.791264999999953,
+        "y" : 1.7874340000000757,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 11,
+        "Name" : "Buenaventura, Colombia",
+        "Acum_Cost_" : 422
+      },
+      "geometry" : {
+        "x" : -77.019721199999935,
+        "y" : 3.8830471000000557,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 12,
+        "Name" : "Juradó, Colombia",
+        "Acum_Cost_" : 602
+      },
+      "geometry" : {
+        "x" : -77.762045999999941,
+        "y" : 7.1026260000000434,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 13,
+        "Name" : "Jaque, Panama",
+        "Acum_Cost_" : 802
+      },
+      "geometry" : {
+        "x" : -78.160718599999939,
+        "y" : 7.516428200000064,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 14,
+        "Name" : "Rio de Janeiro, Brazil",
+        "Acum_Cost_" : 0
+      },
+      "geometry" : {
+        "x" : -43.172896499999979,
+        "y" : -22.90684669999996,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 15,
+        "Name" : "São Paulo, Brazil",
+        "Acum_Cost_" : 30
+      },
+      "geometry" : {
+        "x" : -46.639557099999934,
+        "y" : -23.555771399999969,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 16,
+        "Name" : "Santa Cruz de la Sierra, Bolivia",
+        "Acum_Cost_" : 113
+      },
+      "geometry" : {
+        "x" : -63.156085299999972,
+        "y" : -17.814581899999951,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 17,
+        "Name" : "La Paz, Bolivia",
+        "Acum_Cost_" : 126
+      },
+      "geometry" : {
+        "x" : -68.119293599999935,
+        "y" : -16.489688999999942,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 18,
+        "Name" : "Quito, Ecuador",
+        "Acum_Cost_" : 312
+      },
+      "geometry" : {
+        "x" : -78.46783819999996,
+        "y" : -0.1806531999999379,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 19,
+        "Name" : "Ipiales, Colombia",
+        "Acum_Cost_" : 342
+      },
+      "geometry" : {
+        "x" : -77.641555399999959,
+        "y" : 0.83002000000004728,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 20,
+        "Name" : "Santiago, Chile",
+        "Acum_Cost_" : 0
+      },
+      "geometry" : {
+        "x" : -70.669265499999938,
+        "y" : -33.448889699999938,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 21,
+        "Name" : "Chacalluta Border Complex, Peru",
+        "Acum_Cost_" : 21
+      },
+      "geometry" : {
+        "x" : -70.313541799999939,
+        "y" : -18.31500879999993,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 22,
+        "Name" : "Tacna, Peru",
+        "Acum_Cost_" : 181
+      },
+      "geometry" : {
+        "x" : -70.246274099999937,
+        "y" : -18.006567899999936,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 23,
+        "Name" : "Lima, Peru",
+        "Acum_Cost_" : 181
+      },
+      "geometry" : {
+        "x" : -77.042753999999945,
+        "y" : -12.046373099999926,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 24,
+        "Name" : "Tumbes, Peru",
+        "Acum_Cost_" : 261
+      },
+      "geometry" : {
+        "x" : -80.427088499999968,
+        "y" : -3.5564920999999572,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 25,
+        "Name" : "Guayaquil, Ecuador",
+        "Acum_Cost_" : 299
+      },
+      "geometry" : {
+        "x" : -79.889066199999945,
+        "y" : -2.1894127999999569,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 26,
+        "Name" : "Tulcan, Ecuador",
+        "Acum_Cost_" : 332
+      },
+      "geometry" : {
+        "x" : -77.716592499999933,
+        "y" : 0.81506870000004028,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 27,
+        "Name" : "Iquique, Chile",
+        "Acum_Cost_" : 12
+      },
+      "geometry" : {
+        "x" : -70.135669199999938,
+        "y" : -20.230703299999959,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 28,
+        "Name" : "Desaguadero, Peru",
+        "Acum_Cost_" : 136
+      },
+      "geometry" : {
+        "x" : -69.040394999999933,
+        "y" : -16.563125099999979,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 29,
+        "Name" : "Panama City, Panama",
+        "Acum_Cost_" : 863
+      },
+      "geometry" : {
+        "x" : -79.519869599999936,
+        "y" : 8.9823792000000253,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 30,
+        "Name" : "San José, Costa Rica",
+        "Acum_Cost_" : 933
+      },
+      "geometry" : {
+        "x" : -84.076829399999951,
+        "y" : 9.9129727000000685,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 31,
+        "Name" : "Managua, Nicaragua",
+        "Acum_Cost_" : 962
+      },
+      "geometry" : {
+        "x" : -86.236174399999982,
+        "y" : 12.114992600000051,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 32,
+        "Name" : "Tegucigalpa, Honduras",
+        "Acum_Cost_" : 990
+      },
+      "geometry" : {
+        "x" : -87.171500199999969,
+        "y" : 14.065049000000045,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 33,
+        "Name" : "El Ceibo, Guatemala",
+        "Acum_Cost_" : 1077
+      },
+      "geometry" : {
+        "x" : -90.982664299999954,
+        "y" : 17.259079900000074,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 34,
+        "Name" : "Tenosique, Mexico",
+        "Acum_Cost_" : 1087
+      },
+      "geometry" : {
+        "x" : -91.425050999999939,
+        "y" : 17.472665000000063,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 35,
+        "Name" : "Puebla, Mexico",
+        "Acum_Cost_" : 1183
+      },
+      "geometry" : {
+        "x" : -98.206272699999943,
+        "y" : 19.041439800000035,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 36,
+        "Name" : "Mexico City, Mexico",
+        "Acum_Cost_" : 1187
+      },
+      "geometry" : {
+        "x" : -99.133207999999968,
+        "y" : 19.432607700000062,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 37,
+        "Name" : "San Luis Potosí, Mexico",
+        "Acum_Cost_" : 1211
+      },
+      "geometry" : {
+        "x" : -100.98554089999999,
+        "y" : 22.156469900000047,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 38,
+        "Name" : "Zacatecas, Mexico",
+        "Acum_Cost_" : 1219
+      },
+      "geometry" : {
+        "x" : -102.58325389999999,
+        "y" : 22.770924900000068,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 39,
+        "Name" : "Monclova, Mexico",
+        "Acum_Cost_" : 1242
+      },
+      "geometry" : {
+        "x" : -101.42152359999994,
+        "y" : 26.908037800000045,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 40,
+        "Name" : "Chihuahua, Mexico",
+        "Acum_Cost_" : 1259
+      },
+      "geometry" : {
+        "x" : -106.06910039999997,
+        "y" : 28.632995700000038,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 41,
+        "Name" : "Ciudad Juárez, Mexico",
+        "Acum_Cost_" : 1278
+      },
+      "geometry" : {
+        "x" : -106.42454779999997,
+        "y" : 31.690363800000057,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 42,
+        "Name" : "Tapachula, Mexico",
+        "Acum_Cost_" : 1181
+      },
+      "geometry" : {
+        "x" : -92.263413599999978,
+        "y" : 14.905556700000034,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 43,
+        "Name" : "Salina Cruz, Mexico",
+        "Acum_Cost_" : 1208
+      },
+      "geometry" : {
+        "x" : -95.208762499999978,
+        "y" : 16.184283900000025,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 44,
+        "Name" : "Puerto Escondido, Mexico",
+        "Acum_Cost_" : 1224
+      },
+      "geometry" : {
+        "x" : -97.076736499999981,
+        "y" : 15.871979500000066,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 45,
+        "Name" : "Manzanillo, Mexico",
+        "Acum_Cost_" : 1336
+      },
+      "geometry" : {
+        "x" : -104.33846159999996,
+        "y" : 19.113809400000036,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 46,
+        "Name" : "Puerto Vallarta, Mexico",
+        "Acum_Cost_" : 1358
+      },
+      "geometry" : {
+        "x" : -105.22533159999995,
+        "y" : 20.653407000000072,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 47,
+        "Name" : "Mazatlán, Mexico",
+        "Acum_Cost_" : 1383
+      },
+      "geometry" : {
+        "x" : -106.41114249999998,
+        "y" : 23.249414800000068,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 48,
+        "Name" : "Culiacán, Mexico",
+        "Acum_Cost_" : 1387
+      },
+      "geometry" : {
+        "x" : -107.39401169999996,
+        "y" : 24.809064900000067,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 49,
+        "Name" : "Hermosillo, Mexico",
+        "Acum_Cost_" : 1427
+      },
+      "geometry" : {
+        "x" : -110.95591919999998,
+        "y" : 29.072967300000073,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 50,
+        "Name" : "Nogales, Mexico",
+        "Acum_Cost_" : 1464
+      },
+      "geometry" : {
+        "x" : -110.93810469999994,
+        "y" : 31.301185500000031,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 51,
+        "Name" : "Mexicali, Mexico",
+        "Acum_Cost_" : 1464
+      },
+      "geometry" : {
+        "x" : -115.45226229999997,
+        "y" : 32.624538900000061,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 52,
+        "Name" : "Tijuana, Mexico",
+        "Acum_Cost_" : 1477
+      },
+      "geometry" : {
+        "x" : -117.03824709999998,
+        "y" : 32.514946900000041,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 53,
+        "Name" : "Acayucan, Mexico",
+        "Acum_Cost_" : 1172
+      },
+      "geometry" : {
+        "x" : -94.914597399999991,
+        "y" : 17.949192000000039,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 54,
+        "Name" : "Heroica Veracruz, Mexico",
+        "Acum_Cost_" : 1179
+      },
+      "geometry" : {
+        "x" : -96.134224099999983,
+        "y" : 19.17377300000004,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 55,
+        "Name" : "Tampico, Mexico",
+        "Acum_Cost_" : 1201
+      },
+      "geometry" : {
+        "x" : -97.861098999999967,
+        "y" : 22.233104100000048,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 56,
+        "Name" : "Matamoros, Mexico",
+        "Acum_Cost_" : 1229
+      },
+      "geometry" : {
+        "x" : -97.502737599999989,
+        "y" : 25.869029400000045,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 57,
+        "Name" : "Nuevo Laredo, Mexico",
+        "Acum_Cost_" : 1258
+      },
+      "geometry" : {
+        "x" : -99.549572999999953,
+        "y" : 27.477936200000045,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 58,
+        "Name" : "Reynosa, Mexico",
+        "Acum_Cost_" : 1259
+      },
+      "geometry" : {
+        "x" : -98.297895099999948,
+        "y" : 26.050840600000072,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 59,
+        "Name" : "Eagle Pass, Mexico",
+        "Acum_Cost_" : 1265
+      },
+      "geometry" : {
+        "x" : -100.49952139999999,
+        "y" : 28.709143300000051,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 60,
+        "Name" : "Caracas",
+        "Acum_Cost_" : 0
+      },
+      "geometry" : {
+        "x" : -66.903519999748141,
+        "y" : 10.480700000104946,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 61,
+        "Name" : "Buenos Aires, Argentina",
+        "Acum_Cost_" : 0
+      },
+      "geometry" : {
+        "x" : -58.381570000055433,
+        "y" : -34.60359999964021,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 62,
+        "Name" : "Medellin\r\nSanta Fe de Antioquia, Colombia\r\nMedellin",
+        "Acum_Cost_" : 383
+      },
+      "geometry" : {
+        "x" : -75.817940000330736,
+        "y" : 6.511790000208407,
+        "z" : 0
+      }
+    },
+    {
+      "attributes" : {
+        "FID" : 63,
+        "Name" : "Tecun Uman, Guatemala",
+        "Acum_Cost_" : 1064
+      },
+      "geometry" : {
+        "x" : -92.14011389999996,
+        "y" : 14.678133600000024,
+        "z" : 0
+      }
+    }
+  ]
+}

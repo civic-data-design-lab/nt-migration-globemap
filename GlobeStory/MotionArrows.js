@@ -30,8 +30,12 @@ for (let cont = 0; cont < siteNames.length; cont++) {
         windSVG.setAttribute('d', 'M409.5863,285.0593 L409.5863,686.5136 L208.8591,686.5136 L208.8591,285.0593 L135.3879,285.0593 L309.2227,84.33218 L483.0575,285.0593 z')
         // windSVG.setAttribute('transform', 'rotate(90) scale(0.02)')
 
-        // newGx.appendChild(windSVG)
-        // newGx.appendChild(arrowSVG)
+
+
+
+        newGx.appendChild(windSVG)
+        newGx.appendChild(arrowSVG)
+
 
         // Offset graphic along path
         newGx.style.offsetPath = "path('" + String(pathway) + "')"
