@@ -25,6 +25,11 @@ var afkTimer = 0
 const idleLimit = 30000; 
 var startMapIndex = false 
 var _reset = false
+var arrowInit = false
+var arrowTimer = 0
+var autoTransBool = false
+var autoTransTimer = 0
+
 
 
 // Source data CSV
@@ -32,8 +37,6 @@ const DATA_URL = {
   // BUILDINGS:
     // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
-  // TRIPS_DARIEN: './data/DarienDupPathways.json',
-  // TRIPS_GUATMEX: './data/guatMexStreets.json',
   PATH_COST: './data/PANAM-NEW.json',
   HIGHWAY: './data/Highway.json',
   SPRITE: "./svg/spriteSheet.png",
@@ -101,15 +104,73 @@ const DEFAULT_THEME = {
 //   ]
 // ];
 
+// FUNCTIONS
+// function to enable local JS
+function toggleArrows(jsonSource,index, bool){
+
+  const dArr = document.getElementById('darienArrows')
+  const pArr = document.getElementById('panamaArrows')
+  const gArr = document.getElementById('guatmexArrows')
+  const place = ['darien', 'panama', 'guatmex']
+  
+  const elements = [dArr,pArr,gArr]
+
+  const select = jsonSource[index]
+  const timer = select.duration
+  const zooms = [select.TripsDarien, select.TripsPanama, select.TripsGuatMex]
+
+  for (let i = 0; i < zooms.length; i++) {
+    const shape = elements[i].getElementsByClassName(place[i])
+    
+    if (zooms[i] != 1){
+      for (let v = 0; v < shape.length; v++) {
+        // console.log(shape)
+        shape[v].style.opacity = 0
+      }
+      
+      if (bool == true){
+        setTimeout(() => {
+          elements[i].style.display = 'none'
+        }, 0);
+      }
+
+     
+    }else{
+      for (let v = 0; v < shape.length; v++) {
+        shape[v].style.opacity = 1
+        
+      }
+
+      if (bool == true){
+        setTimeout(() => {
+          if (index == 0){
+            elements[i].style.pointerEvents = 'none'
+          }
+          else{
+            elements[i].style.pointerEvents = 'auto'
+          }
+          return elements[i].style.display = 'inherit'
+  
+        }, 0);
+        
+      }
+
+    
+    } 
+    }
+
+  }
+
+
 export default function App({
   // buildings = DATA_URL.BUILDINGS,
   trips = DATA_URL.TRIPS,
-  trailLength = 35,
+  trailLength = 50,
   trailLengthZoom = 100,
   // initialViewState = INITIAL_VIEW_STATE,
   // mapStyle = MAP_STYLE,
   theme = DEFAULT_THEME,
-  loopLength = 120000, // unit corresponds to the timestamp in source data
+  loopLength = 12000, // unit corresponds to the timestamp in source data
   animationSpeed = 1,
   data
 }) {
@@ -134,12 +195,7 @@ const [currentTime, setCurrentTime] = useState(0);
   }, [groups]);
 
   const timeRange = [currentTime, currentTime + TIME_WINDOW];
-  // const [glContext, setGLContext] = useState();
-  // const formatLabel = useCallback(t => getDate(data, t).toUTCString(), [data]);
   
-
-
-
   const [initialViewState, setInitialViewState] = useState({
     latitude: chapterData[startMapIndex].latitude,
     longitude: chapterData[startMapIndex].longitude,
@@ -194,78 +250,30 @@ function typeWriter(speed, source, sourceLen, target, base) {
   }
 }
 
-//function to get base children
-// function getBaseChildren(list){
-//   var baseKids = []
-//     for (let li = 0; li < list.length; li++) {
-//       console.log(list[li].children.length)
-//       if(list[li].children.length < 1){
-//         return list
-//       }else{
-//         baseKids.push(list[li].children)
-//       }
-//       getBaseChildren(basekids)
-      
-//     }
-
-//   return baseKids
-// }
-
-// function to enable local JS
-function toggleArrows(jsonSource,index){
-  <></>
-  // const dArr = document.getElementById('darienArrows')
-  // const pArr = document.getElementById('panamaArrows')
-  // const gArr = document.getElementById('guatmexArrows')
-  // const elements = [dArr,pArr,gArr]
-  // let eleChildren = getBaseChildren(elements)
-  // console.log(eleChildren)
-
-  // for (let ei = 0; ei < elements.length; ei++) {
-  //   const list = [elements[ei].children]
-  //   eleChildren.push(list)  
-  // }
-  
-
-  // const select = jsonSource[index]
-  // const timer = select.duration
-  // const zooms = [select.TripsDarien, select.TripsPanama, select.TripsGuatMex]
-
-  // for (let i = 0; i < zooms.length; i++) {
-  //   if (zooms[i] != 1){
-  //     for (let el = 0; el < eleChildren.length; el++) {
-  //       console.log(eleChildren[i][0][el])
-  //       eleChildren[i][0][el].style.opacity = '0'
-  //     }
-
-  //     setTimeout(() => {
-  //       elements[i].style.display = 'none'
-  //     }, 5000);
-     
-  //   }else{
-  //     for (let el = 0; el < eleChildren.length; el++) {
-  //       eleChildren[i][0][el].style.opacity = '1'
-  //     }
-  //     setTimeout(() => {
-  //       if (index == 0){
-  //         elements[i].style.pointerEvents = 'none'
-  //       }
-  //       else{
-  //         elements[i].style.pointerEvents = 'auto'
-  //       }
-    
-  //       elements[i].style.display = 'inherit'
-
-  //     }, timer);
-    
-  //   } 
-  //   }
+if (arrowInit == true){
+  arrowTimer++
+  if (arrowTimer > 100){
+    arrowInit = false
+    arrowTimer = 0
+    toggleArrows(chapterData, counter, true)
 
   }
+}
+
+if (autoTransBool != 0){
+  autoTransTimer++
+  console.log(autoTransTimer)
+  if (autoTransTimer > chapterData[counter].autoTransition){
+    counter+autoTransBool
+    autoTransBool = 0
+    {nextChapter()}
+  }
+}
+
+var autoTriggerFire;
 
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
-    // console.log(counter)
     AFK=false
     afkTimer = 0
     counter++
@@ -307,7 +315,8 @@ function toggleArrows(jsonSource,index){
     }
 
     //toggle Arrows
-    toggleArrows(chapterData, counter)
+    arrowInit = true;
+    toggleArrows(chapterData, counter, false);
 
     //toggle narrativeChapters
     const header = document.getElementById('narrativeText')
@@ -338,9 +347,22 @@ function toggleArrows(jsonSource,index){
 
     dText.innerHTML = chapterData[counter].desc
 
-    // console.log(counter)
+    if (autoTriggerFire != null){
+      clearTimeout(autoTriggerFire)
+    }
+
+    if (chapterData[counter].autoTransition != ""){
+      autoTriggerFire = setTimeout(() => {nextChapter()}, chapterData[counter].duration + chapterData[counter].autoTransition)      
+    }
+
 
     }, []);
+
+    // console.log('ok')
+
+
+    // if (counter>0){
+    // console.log(autoTriggerFire)}
 
     // NAVIGATION FORWARD
     var prevChapter = useCallback(() => {
@@ -372,7 +394,8 @@ function toggleArrows(jsonSource,index){
         })
       }
 
-      toggleArrows(chapterData, counter)
+      arrowInit = true
+      toggleArrows(chapterData, counter, false)
   
       //toggle narrativeChapters
       const header = document.getElementById('narrativeText')
@@ -402,55 +425,19 @@ function toggleArrows(jsonSource,index){
       typeWriter(typeSpeed, h2Text, h2TextLen, sText, -1)
   
       dText.innerHTML = chapterData[counter].desc
+
+      
+      if (autoTriggerFire != null){
+        clearTimeout(autoTriggerFire)
+      }
+  
+      if (chapterData[counter].autoTransition != ""){
+        autoTriggerFire = setTimeout(() => {prevChapter()}, chapterData[counter].duration + chapterData[counter].autoTransition)      
+      }
+  
   
       }, []);
 
-  // // NAVIGATION BACKWARD
-  // var prevChapter = useCallback(() => {
-  //   AFK=false
-  //   afkTimer = 0
-
-  //   if(counter > 0){
-  //     counter--
-  //   }
-
-  //   setInitialViewState({
-  //     latitude: chapterData[counter].latitude,
-  //     longitude: chapterData[counter].longitude,
-  //     zoom: chapterData[counter].zoom,
-  //     transitionDuration: chapterData[counter].duration,
-  //     transitionInterpolator: transition,
-  //     transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
-  //   })
-
-    
-  //   //toggle narrativeChapters
-  //   const header = document.getElementById('narrativeText')
-  //   const sText = document.getElementById('subText')
-  //   const dText = document.getElementById('description')
-  //   const narImg = document.getElementById('narrativeImg')
-  //   narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
-  //   header.innerHTML = chapterData[counter].header
-  //   sText.innerHTML = chapterData[counter].subText
-  //   dText.innerHTML = chapterData[counter].desc
-
-  // }, []);
-    
-
-   // NAVIGATION JUMP
-  //  var jumpToChapter = useCallback(() => {
-  //   AFK=false
-  //   afkTimer = 0
-
-  //   counter = 1;
-  //   setInitialViewState({
-  //       latitude: chapterData[counter].latitude,
-  //       longitude: chapterData[counter].longitude,
-  //       zoom: chapterData[counter].zoom,
-  //       transitionDuration: chapterData[counter].duration,
-  //       transitionInterpolator: transition
-  //   })
-  // }, []);
 
   const layers = [
 
@@ -545,7 +532,7 @@ function toggleArrows(jsonSource,index){
     new PathLayer({
       id: 'accumulatedCost',
       data: DATA_URL.PATH_COST,
-      widthScale: 3,
+      widthScale: 2,
       widthMinPixels: 2,
       getPath: d => d.path,
       getColor: [255,255,255,255],
@@ -576,56 +563,23 @@ function toggleArrows(jsonSource,index){
       getPath: d => d.path,
       getTimestamps: d => d.timestamps,
       getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-      opacity: 0.3,
-      widthMinPixels:3,
-      widthMaxPixels:3,
+      opacity: 1,
+      widthMinPixels:5,
+      // widthMaxPixels:3,
       capRounded: true,
       jointRounded: true,
       trailLength,
       currentTime: time,
       shadowEnabled: false,
       fadeTrail: true,
-      visible: chapterData[counter].trips,
+      visible: chapterData[counter].Trips,
       parameters: {
         depthTest: false
       }
       
     }),
 
-    // new TripsLayer({
-    //   id: 'trips-darien',
-    //   data: DATA_URL.TRIPS_DARIEN,
-    //   getPath: d => d.path,
-    //   getTimestamps: d => d.timestamps,
-    //   getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-    //   opacity: 0.3,
-    //   widthMinPixels:5,
-    //   trailLengthZoom,
-    //   currentTime: time,
-    //   shadowEnabled: false,
-    //   visible: chapterData[counter].TripsDarien,
-    //   parameters: {
-    //     depthTest: false
-    //   }
-    // }),
-
-    // new TripsLayer({
-    //   id: 'trips-guatMex',
-    //   data: DATA_URL.TRIPS_GUATMEX,
-    //   getPath: d => d.path,
-    //   getTimestamps: d => d.timestamps,
-    //   getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-    //   opacity: 0.3,
-    //   widthMinPixels:5,
-    //   trailLengthZoom,
-    //   currentTime: time,
-    //   shadowEnabled: false,
-    //   visible: chapterData[counter].TripsDarien,
-    //   parameters: {
-    //     depthTest: false
-    //   }
-    // }),
-
+  
     new IconLayer({
       id: 'icon-layer2',
       data: DATA_URL.SPRITE_MAP,

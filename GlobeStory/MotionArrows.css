@@ -98,7 +98,7 @@ svg {
 .arrows{
  fill:rgba(219, 191, 35, 0.815);
  stroke: rgba(0, 0, 0, 0.699);
- transition: 1s ease-in-out;
+ transition: 0,5s ease-in-out;
  opacity: 1;
  /* transform: scale(0.02)rotate(90deg); */
  /* stroke-width: 20px; */
@@ -106,7 +106,7 @@ svg {
 
 .wind{
     fill:rgba(248, 247, 168, 0.59);
-    transition: 1s ease-in-out;
+    transition: 0.5s ease-in-out;
     opacity: 1;
-    /* filter: blur(350px); */
+    filter: blur(250px);
 }
