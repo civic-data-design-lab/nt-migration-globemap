@@ -41,7 +41,9 @@ body {
     margin: 0; 
     overflow: hidden; 
     fill:black; 
-    background: black;}
+    background: black;
+    /* cursor: none !important; */
+}
 
 
 #narrativeContainer{
@@ -54,8 +56,12 @@ body {
     /* height: 100vh; */
 }
 
-#narrativeContainer *{
+#narrativeContainer > *{
     pointer-events: none;
+    -webkit-user-select: none; /* Safari */        
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 
 
@@ -104,14 +110,13 @@ body {
     height: 100vh;
     pointer-events: none;
     background-image: url("img/placeholder.png");
-    background-size: contain;
-    transition: 0.5s ease-in-out;
+    background-size: 100% 100%;
+    transition: 1.5s ease-in-out;
     opacity: 1;
 
     /* border: 3px solid blue; */
 
 }
-
 
 #btnContainer {
     margin: 0;
@@ -121,23 +126,23 @@ body {
     -ms-transform: translate(-50%, -90%);
     transform: translate(-50%, -90%);
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    width: 50%;
+    grid-template-columns: repeat(2, 1fr);
+    width: 75%;
     align-items: center;
+    z-index: 3;
 }
 
 .btn {
     color: none;
     background-color: rgba(0, 0, 0, 0);
     border: none;
-    font-size: 1.5em;
-    -webkit-text-stroke: 0.5px rgb(150, 181, 155);
+    font-size: 2.5em;
+    -webkit-text-stroke: 1px rgb(150, 181, 155);
     transition: 0.25s linear;
     cursor: crosshair;
     /* animation: glow 8s infinite; */
     text-align: center;
-    width: 50%;
-
+    width: 100%;
 }
 
 .btn:hover {

@@ -22,7 +22,7 @@ const chapterData = require('./mapChapters.json');
 var AFK = true
 var afkTimer = 0
 // set the AFK timeout
-const idleLimit = 10000; 
+const idleLimit = 30000; 
 var startMapIndex = false 
 var _reset = false
 
@@ -32,8 +32,8 @@ const DATA_URL = {
   // BUILDINGS:
     // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
-  TRIPS_DARIEN: './data/DarienDupPathways.json',
-  TRIPS_GUATMEX: './data/guatMexStreets.json',
+  // TRIPS_DARIEN: './data/DarienDupPathways.json',
+  // TRIPS_GUATMEX: './data/guatMexStreets.json',
   PATH_COST: './data/PANAM-NEW.json',
   HIGHWAY: './data/Highway.json',
   SPRITE: "./svg/spriteSheet.png",
@@ -47,7 +47,6 @@ const ICON_MAPPING = {
 const ICON_MAPPING2 = require('./svg/sprite.json')
 // const ICON_MAPPING2 = require('./svg/sprite.json')
 // console.log(ICON_MAPPING2).frames[0]
-
 
 const DATA_GLOBE = './data';
 
@@ -135,8 +134,8 @@ const [currentTime, setCurrentTime] = useState(0);
   }, [groups]);
 
   const timeRange = [currentTime, currentTime + TIME_WINDOW];
-  const [glContext, setGLContext] = useState();
-  const formatLabel = useCallback(t => getDate(data, t).toUTCString(), [data]);
+  // const [glContext, setGLContext] = useState();
+  // const formatLabel = useCallback(t => getDate(data, t).toUTCString(), [data]);
   
 
 
@@ -195,11 +194,78 @@ function typeWriter(speed, source, sourceLen, target, base) {
   }
 }
 
-// console.log(counter)
+//function to get base children
+// function getBaseChildren(list){
+//   var baseKids = []
+//     for (let li = 0; li < list.length; li++) {
+//       console.log(list[li].children.length)
+//       if(list[li].children.length < 1){
+//         return list
+//       }else{
+//         baseKids.push(list[li].children)
+//       }
+//       getBaseChildren(basekids)
+      
+//     }
+
+//   return baseKids
+// }
+
+// function to enable local JS
+function toggleArrows(jsonSource,index){
+  <></>
+  // const dArr = document.getElementById('darienArrows')
+  // const pArr = document.getElementById('panamaArrows')
+  // const gArr = document.getElementById('guatmexArrows')
+  // const elements = [dArr,pArr,gArr]
+  // let eleChildren = getBaseChildren(elements)
+  // console.log(eleChildren)
+
+  // for (let ei = 0; ei < elements.length; ei++) {
+  //   const list = [elements[ei].children]
+  //   eleChildren.push(list)  
+  // }
+  
+
+  // const select = jsonSource[index]
+  // const timer = select.duration
+  // const zooms = [select.TripsDarien, select.TripsPanama, select.TripsGuatMex]
+
+  // for (let i = 0; i < zooms.length; i++) {
+  //   if (zooms[i] != 1){
+  //     for (let el = 0; el < eleChildren.length; el++) {
+  //       console.log(eleChildren[i][0][el])
+  //       eleChildren[i][0][el].style.opacity = '0'
+  //     }
+
+  //     setTimeout(() => {
+  //       elements[i].style.display = 'none'
+  //     }, 5000);
+     
+  //   }else{
+  //     for (let el = 0; el < eleChildren.length; el++) {
+  //       eleChildren[i][0][el].style.opacity = '1'
+  //     }
+  //     setTimeout(() => {
+  //       if (index == 0){
+  //         elements[i].style.pointerEvents = 'none'
+  //       }
+  //       else{
+  //         elements[i].style.pointerEvents = 'auto'
+  //       }
+    
+  //       elements[i].style.display = 'inherit'
+
+  //     }, timer);
+    
+  //   } 
+  //   }
+
+  }
 
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
-    console.log(counter)
+    // console.log(counter)
     AFK=false
     afkTimer = 0
     counter++
@@ -209,9 +275,7 @@ function typeWriter(speed, source, sourceLen, target, base) {
       setIsPlaying(true)
     }
    
-    
-    console.log(counter)
-
+  
     // reset arc animation
     if(counter >= chapterData.length){
       // RESET STORY AFTER COMPLETING NARRATIVE
@@ -241,6 +305,9 @@ function typeWriter(speed, source, sourceLen, target, base) {
         transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
       })
     }
+
+    //toggle Arrows
+    toggleArrows(chapterData, counter)
 
     //toggle narrativeChapters
     const header = document.getElementById('narrativeText')
@@ -304,6 +371,8 @@ function typeWriter(speed, source, sourceLen, target, base) {
           transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
         })
       }
+
+      toggleArrows(chapterData, counter)
   
       //toggle narrativeChapters
       const header = document.getElementById('narrativeText')
@@ -523,39 +592,39 @@ function typeWriter(speed, source, sourceLen, target, base) {
       
     }),
 
-    new TripsLayer({
-      id: 'trips-darien',
-      data: DATA_URL.TRIPS_DARIEN,
-      getPath: d => d.path,
-      getTimestamps: d => d.timestamps,
-      getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-      opacity: 0.3,
-      widthMinPixels:5,
-      trailLengthZoom,
-      currentTime: time,
-      shadowEnabled: false,
-      visible: chapterData[counter].TripsDarien,
-      parameters: {
-        depthTest: false
-      }
-    }),
+    // new TripsLayer({
+    //   id: 'trips-darien',
+    //   data: DATA_URL.TRIPS_DARIEN,
+    //   getPath: d => d.path,
+    //   getTimestamps: d => d.timestamps,
+    //   getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+    //   opacity: 0.3,
+    //   widthMinPixels:5,
+    //   trailLengthZoom,
+    //   currentTime: time,
+    //   shadowEnabled: false,
+    //   visible: chapterData[counter].TripsDarien,
+    //   parameters: {
+    //     depthTest: false
+    //   }
+    // }),
 
-    new TripsLayer({
-      id: 'trips-guatMex',
-      data: DATA_URL.TRIPS_GUATMEX,
-      getPath: d => d.path,
-      getTimestamps: d => d.timestamps,
-      getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-      opacity: 0.3,
-      widthMinPixels:5,
-      trailLengthZoom,
-      currentTime: time,
-      shadowEnabled: false,
-      visible: chapterData[counter].TripsDarien,
-      parameters: {
-        depthTest: false
-      }
-    }),
+    // new TripsLayer({
+    //   id: 'trips-guatMex',
+    //   data: DATA_URL.TRIPS_GUATMEX,
+    //   getPath: d => d.path,
+    //   getTimestamps: d => d.timestamps,
+    //   getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+    //   opacity: 0.3,
+    //   widthMinPixels:5,
+    //   trailLengthZoom,
+    //   currentTime: time,
+    //   shadowEnabled: false,
+    //   visible: chapterData[counter].TripsDarien,
+    //   parameters: {
+    //     depthTest: false
+    //   }
+    // }),
 
     new IconLayer({
       id: 'icon-layer2',
@@ -596,14 +665,17 @@ function typeWriter(speed, source, sourceLen, target, base) {
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality.toUpperCase(),
-    getSize: 8,
+    getSize: 14,
     getColor: [180, 235, 190],
     getAngle: 0, 
     getPixelOffset: [-5,-1],
     fontWeight: 'bold',
-    getTextAnchor: 'middle',
+    getTextAnchor: 'end',
     getAlignmentBaseline: 'bottom',
-    visible: chapterData[counter].Countries
+    visible: chapterData[counter].Countries,
+    // parameters: {
+    //   depthTest: false
+    // }
 
   }),
 
@@ -639,9 +711,9 @@ function typeWriter(speed, source, sourceLen, target, base) {
         getWidth: 1,   
         timeRange,
         // getSourceColor: [255, 255, 0],
-        getSourceColor: [255, 255, 255],
+        getTargetColor: [255, 255, 255],
         // getTargetColor: [255, 255, 255],
-        getTargetColor: [223 , 195, 40],
+        getSourceColor: [235 , 168, 94],
         visible: chapterData[counter].AnimatedArcs
       })
   );
@@ -680,13 +752,10 @@ function typeWriter(speed, source, sourceLen, target, base) {
       <div className="btnContainer" id='btnContainer'>
         <div className='btn' onClick={prevChapter}>◀</div>
         <div className='btn' onClick={nextChapter}>▶</div>
-        
       </div>
     </div>
   );
-}
-
-
+} 
 
 export function renderToDOM(container) {
   render(<App />, container);
