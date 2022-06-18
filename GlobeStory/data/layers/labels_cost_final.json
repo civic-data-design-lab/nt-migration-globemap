@@ -1,0 +1,203 @@
+[
+  {
+    "Accum_cost": "$80",
+    "lab_small": 1,
+    "final_lab": "Caracas,  Venezuela",
+    "x": -66.90352,
+    "y": 10.4807
+  },
+  {
+    "Accum_cost": "$390",
+    "lab_small": 4,
+    "final_lab": "Ipiales,  Colombia",
+    "x": -77.64381,
+    "y": 0.82138
+  },
+
+  {
+    "Accum_cost": "$1,216",
+    "lab_small": 12,
+    "final_lab": "Tampico,  Mexico",
+    "x": -97.86104,
+    "y": 22.2331
+  },
+  
+  {
+    "Accum_cost": "$1,064",
+    "lab_small": 11,
+    "final_lab": "Tegucigalpa,  Honduras",
+    "x": -87.17151,
+    "y": 14.06502
+  },
+  {
+    "Accum_cost": "$1,174",
+    "lab_small": 12,
+    "final_lab": "Puebla,  Mexico",
+    "x": -98.20627,
+    "y": 19.04144
+  },
+  {
+    "Accum_cost": "$1,198",
+    "lab_small": 12,
+    "final_lab": "Mexico City,  Mexico",
+    "x": -99.13329,
+    "y": 19.43196
+  },
+  
+  {
+    "Accum_cost": "$1,441",
+    "lab_small": 14,
+    "final_lab": "Tijuana,  Mexico",
+    "x": -117.03818,
+    "y": 32.51486
+  },
+
+  {
+    "Accum_cost": "$1,211",
+    "lab_small": 12,
+    "final_lab": "Mazatlan,  Mexico",
+    "x": -106.41116,
+    "y": 23.2494
+  },
+  {
+    "Accum_cost": "$920",
+    "lab_small": 9,
+    "final_lab": "David,  Panama",
+    "x": -82.27849,
+    "y": 8.37863
+  },
+  {
+    "Accum_cost": "$949",
+    "lab_small": 9,
+    "final_lab": "San Jose,  Costa Rica",
+    "x": -84.07683,
+    "y": 9.91303
+  },
+  {
+    "Accum_cost": "$963",
+    "lab_small": 10,
+    "final_lab": "Managua,  Nicaragua",
+    "x": -86.23642,
+    "y": 12.11486
+  },
+
+  {
+    "Accum_cost": "$1,132",
+    "lab_small": 11,
+    "final_lab": "Tapachula,  Mexico",
+    "x": -92.26363,
+    "y": 14.90522
+  },
+
+  {
+    "Accum_cost": "$1,428",
+    "lab_small": 14,
+    "final_lab": "Nogales,  Mexico",
+    "x": -110.93808,
+    "y": 31.30124
+  },
+  {
+    "Accum_cost": "$380",
+    "lab_small": 4,
+    "final_lab": "Ipiales,  Colombia",
+    "x": -77.64154,
+    "y": 0.83004
+  },
+
+  {
+    "Accum_cost": "$870",
+    "lab_small": 9,
+    "final_lab": "La Palma,  Panama",
+    "x": -77.450563,
+    "y": 8.663029
+  },
+
+  {
+    "Accum_cost": "$500",
+    "lab_small": 5,
+    "final_lab": "Buenaventura,  Colombia",
+    "x": -77.0197212,
+    "y": 3.8830471
+  },
+
+  
+  {
+    "Accum_cost": "$270",
+    "lab_small": 3,
+    "final_lab": "Lima,  Peru",
+    "x": -77.04267565,
+    "y": -12.04636642
+  },
+  {
+    "Accum_cost": "$80",
+    "lab_small": 1,
+    "final_lab": "Sao Paulo,  Brazil",
+    "x": -46.63955593,
+    "y": -23.55576403
+  },
+  {
+    "Accum_cost": "$105",
+    "lab_small": 1,
+    "final_lab": "Santa Cruz,  Bolivia",
+    "x": -63.15598612,
+    "y": -17.81448904
+  },
+  {
+    "Accum_cost": "60",
+    "lab_small": 1,
+    "final_lab": "Santiago,  Chile",
+    "x": -70.66922,
+    "y": -33.44888
+  },
+  {
+    "Accum_cost": "$325",
+    "lab_small": 3,
+    "final_lab": "Guayaquil,  Ecuador",
+    "x": -79.88913702,
+    "y": -2.18940208
+  },
+  {
+    "Accum_cost": "$290",
+    "lab_small": 3,
+    "final_lab": "Tumbes,  Peru",
+    "x": -80.42696397,
+    "y": -3.55645557
+  },
+  {
+    "Accum_cost": "$128",
+    "lab_small": 1,
+    "final_lab": "Arica,  Chile",
+    "x": -70.31350504,
+    "y": -18.31501633
+  },
+
+  {
+    "Accum_cost": "$85",
+    "lab_small": 1,
+    "final_lab": "Antofagasta,  Chile",
+    "x": -70.22990058,
+    "y": -23.53446809
+  },
+  {
+    "Accum_cost": "$0",
+    "lab_small": 0,
+    "final_lab": "Antofagasta,  Chile",
+    "x": -70.22997351,
+    "y": -23.5343125
+  },
+  {
+    "Accum_cost": "$90",
+    "lab_small": 1,
+    "final_lab": "Buenos Aires,  Argentina",
+    "x": -58.38157,
+    "y": -34.6036
+  },
+
+  {
+    "Accum_cost": "$395",
+    "lab_small": 4,
+    "final_lab": "La Paz,  Bolivia",
+    "x": -68.11926,
+    "y": -16.48997
+  }
+]

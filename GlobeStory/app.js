@@ -660,24 +660,70 @@ function toggleArrows(jsonSource,index){
 
   new TextLayer({
     id: 'text-layer',
-    data: './data/layers/nat.json',
+    data: './data/layers/arrF.json',
     fontFamily: 'SpeziaWide',
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality.toUpperCase(),
     getSize: 14,
     getColor: [180, 235, 190],
-    getAngle: 0, 
+    getAngle: 180, 
     getPixelOffset: [-5,-1],
     fontWeight: 'bold',
     getTextAnchor: 'end',
     getAlignmentBaseline: 'bottom',
+    billboard: false,
     visible: chapterData[counter].Countries,
     // parameters: {
     //   depthTest: false
     // }
 
   }),
+
+  new TextLayer({
+    id: 'text-layer-cost',
+    data: './data/layers/labels_cost_final.json',
+    fontFamily: 'SpeziaWide',
+    pickable: false,
+    getPosition: d => [d.x, d.y],
+    getText: d => d.Accum_cost,
+    getSize: 10,
+    getColor: [180, 235, 190],
+//     getAngle: 180, 
+    getPixelOffset: [-5,-1],
+    fontWeight: 'bold',
+    getTextAnchor: 'end',
+    getAlignmentBaseline: 'bottom',
+    billboard: true,
+    visible: chapterData[counter].PanamPath,
+    parameters: {
+      depthTest: false
+    }
+
+  }),
+  
+    new TextLayer({
+    id: 'text-layer-label',
+    data: './data/layers/labels_cost_final.json',
+    fontFamily: 'SpeziaWide',
+    pickable: false,
+    getPosition: d => [d.x, d.y],
+    getText: d => d.final_lab,
+    getSize: 10,
+    getColor: [180, 235, 190],
+//     getAngle: 180, 
+    getPixelOffset: [-5,-10],
+    fontWeight: 'bold',
+    getTextAnchor: 'end',
+    getAlignmentBaseline: 'bottom',
+    billboard: true,
+    visible: chapterData[counter].PanamPath,
+    parameters: {
+      depthTest: false
+    }
+
+  }),
+
 
     // new PolygonLayer({
     //   id: 'buildings',
