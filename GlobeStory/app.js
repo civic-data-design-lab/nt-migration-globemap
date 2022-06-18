@@ -4,10 +4,10 @@ import {render} from 'react-dom';
 import {StaticMap} from 'react-map-gl';
 import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
-import {PolygonLayer, TextLayer, PathLayer,GeoJsonLayer} from '@deck.gl/layers';
+import {PolygonLayer, TextLayer, PathLayer,GeoJsonLayer, IconLayer, BitmapLayer} from '@deck.gl/layers';
 import {TripsLayer} from '@deck.gl/geo-layers';
 import {_GlobeView as GlobeView} from '@deck.gl/core';
-import {BitmapLayer} from '@deck.gl/layers';
+// import {BitmapLayer} from '@deck.gl/layers';
 import {FlyToInterpolator, LinearInterpolator} from 'deck.gl';
 import AnimatedArcLayer from './animated-arc-layer';
 import {sliceData, getDate} from './slice-data';
@@ -19,12 +19,13 @@ import {TileLayer} from '@deck.gl/geo-layers';
 
 // chapters
 const chapterData = require('./mapChapters.json');
-const tempData = require('./data/tmpLayers/accumulatedCost.json');
 var AFK = true
 var afkTimer = 0
 // set the AFK timeout
 const idleLimit = 10000; 
 var startMapIndex = false 
+var _reset = false
+
 
 // Source data CSV
 const DATA_URL = {
@@ -33,8 +34,20 @@ const DATA_URL = {
   TRIPS: './data/PANAMV3.json', // eslint-disable-line
   TRIPS_DARIEN: './data/DarienDupPathways.json',
   TRIPS_GUATMEX: './data/guatMexStreets.json',
-  PATH_COST: './data/FULLPATH.json',
+  PATH_COST: './data/PANAM-NEW.json',
+  HIGHWAY: './data/Highway.json',
+  SPRITE: "./svg/spriteSheet.png",
+  SPRITE_MAP: "./svg/sprite.json"
 };
+
+const ICON_MAPPING = {
+  marker: {x: 0, y: 0, width: 128, height: 128, mask: true}
+};
+
+const ICON_MAPPING2 = require('./svg/sprite.json')
+// const ICON_MAPPING2 = require('./svg/sprite.json')
+// console.log(ICON_MAPPING2).frames[0]
+
 
 const DATA_GLOBE = './data';
 
@@ -102,6 +115,7 @@ export default function App({
   data
 }) {
 
+
   // get start state
   if (startMapIndex == false){
     for (let i = 0; i < chapterData.length; i++) {
@@ -111,6 +125,8 @@ export default function App({
       
     }
   }
+
+const [isPlaying, setIsPlaying] = useState(false);
 
 const [currentTime, setCurrentTime] = useState(0);
   const groups = useMemo(() => sliceData(data), [data]);
@@ -170,16 +186,38 @@ const [currentTime, setCurrentTime] = useState(0);
     }
   }
 
+  // text type function
+function typeWriter(speed, source, sourceLen, target, base) {
+  if (base < sourceLen) {
+    target.innerHTML += source.charAt(base);
+    base++;
+    setTimeout(typeWriter,speed, speed, source, sourceLen, target, base);
+  }
+}
+
+// console.log(counter)
+
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
-
-    // GOOGLE HOW TO GET PENDING TIMEOUTS
+    console.log(counter)
     AFK=false
     afkTimer = 0
-    counter++;
+    counter++
 
+    // enable arc animation
+    if(counter == 2){
+      setIsPlaying(true)
+    }
+   
+    
+    console.log(counter)
+
+    // reset arc animation
     if(counter >= chapterData.length){
       // RESET STORY AFTER COMPLETING NARRATIVE
+      setIsPlaying(false)
+      _reset = true
+  
       setInitialViewState({
         latitude: chapterData[startMapIndex].latitude,
         longitude: chapterData[startMapIndex].longitude,
@@ -188,10 +226,9 @@ const [currentTime, setCurrentTime] = useState(0);
         transitionInterpolator: transition,
         transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
       })
-
       counter = 0
+      
     }
-    
   
     // CHANGE CAMERA VIEW THROUGH STORY
     if(chapterData[counter].name != 'NaN'){
@@ -221,82 +258,130 @@ const [currentTime, setCurrentTime] = useState(0);
       _flare.innerHTML = "|"
     }
 
-
-    // var txt = chapterData[counter].header;
-    var hlen=0
-    var slen=0
-    var typeSpeed =150;
+    var typeSpeed =100;
     header.innerHTML = ""
     sText.innerHTML = ""
+    var headText = chapterData[counter].header
+    var headTextLen = chapterData[counter].header.length
+    var h2Text = chapterData[counter].subText
+    var h2TextLen = chapterData[counter].subText.length
 
-    typeWriter()
-    function typeWriter() {
-    if (hlen < chapterData[counter].header.length) {
-      header.innerHTML += chapterData[counter].header.charAt(hlen);
-      hlen++;
-    setTimeout(typeWriter, typeSpeed);
-    }
-
-    if (slen < chapterData[counter].subText.length) {
-      sText.innerHTML += chapterData[counter].subText.charAt(slen);
-      slen++;
-    setTimeout(typeWriter, typeSpeed);
-    }
-    }
-
+    typeWriter(typeSpeed, headText, headTextLen, header, -1)
+    typeWriter(typeSpeed, h2Text, h2TextLen, sText, -1)
 
     dText.innerHTML = chapterData[counter].desc
 
-    console.log(counter)
+    // console.log(counter)
 
     }, []);
 
-  // NAVIGATION BACKWARD
-  var prevChapter = useCallback(() => {
-    AFK=false
-    afkTimer = 0
+    // NAVIGATION FORWARD
+    var prevChapter = useCallback(() => {
+      AFK=false
+      afkTimer = 0
+      counter--;
+  
+      // disable arc animation
+      if(counter < 2){
+        setIsPlaying(false)
+        _reset = true
+      }
+     
+  
+      // flip counters
+      if(counter < 0){
+        counter = chapterData.length-1
+      }
+    
+      // CHANGE CAMERA VIEW THROUGH STORY
+      if(chapterData[counter].name != 'NaN'){
+        setInitialViewState({
+          latitude: chapterData[counter].latitude,
+          longitude: chapterData[counter].longitude,
+          zoom: chapterData[counter].zoom,
+          transitionDuration: chapterData[counter].duration,
+          transitionInterpolator: transition,
+          transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+        })
+      }
+  
+      //toggle narrativeChapters
+      const header = document.getElementById('narrativeText')
+      const _flare = document.getElementById('flare')
+      const sText = document.getElementById('subText')
+      const dText = document.getElementById('description')
+      const narImg = document.getElementById('narrativeImg')
+      narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
+      
+  
+      if(chapterData[counter].header==""){
+        _flare.innerHTML = ""
+      }
+      else{
+        _flare.innerHTML = "|"
+      }
+  
+      var typeSpeed =100;
+      header.innerHTML = ""
+      sText.innerHTML = ""
+      var headText = chapterData[counter].header
+      var headTextLen = chapterData[counter].header.length
+      var h2Text = chapterData[counter].subText
+      var h2TextLen = chapterData[counter].subText.length
+  
+      typeWriter(typeSpeed, headText, headTextLen, header, -1)
+      typeWriter(typeSpeed, h2Text, h2TextLen, sText, -1)
+  
+      dText.innerHTML = chapterData[counter].desc
+  
+      }, []);
 
-    if(counter > 0){
-      counter--
-    }
+  // // NAVIGATION BACKWARD
+  // var prevChapter = useCallback(() => {
+  //   AFK=false
+  //   afkTimer = 0
 
-    setInitialViewState({
-      latitude: chapterData[counter].latitude,
-      longitude: chapterData[counter].longitude,
-      zoom: chapterData[counter].zoom,
-      transitionDuration: chapterData[counter].duration,
-      transitionInterpolator: transition,
-      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
-    })
+  //   if(counter > 0){
+  //     counter--
+  //   }
+
+  //   setInitialViewState({
+  //     latitude: chapterData[counter].latitude,
+  //     longitude: chapterData[counter].longitude,
+  //     zoom: chapterData[counter].zoom,
+  //     transitionDuration: chapterData[counter].duration,
+  //     transitionInterpolator: transition,
+  //     transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+  //   })
 
     
-    //toggle narrativeChapters
-    const header = document.getElementById('narrativeText')
-    const sText = document.getElementById('subText')
-    const dText = document.getElementById('description')
-    const narImg = document.getElementById('narrativeImg')
-    narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
-    header.innerHTML = chapterData[counter].header
-    sText.innerHTML = chapterData[counter].subText
-    dText.innerHTML = chapterData[counter].desc
+  //   //toggle narrativeChapters
+  //   const header = document.getElementById('narrativeText')
+  //   const sText = document.getElementById('subText')
+  //   const dText = document.getElementById('description')
+  //   const narImg = document.getElementById('narrativeImg')
+  //   narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
+  //   header.innerHTML = chapterData[counter].header
+  //   sText.innerHTML = chapterData[counter].subText
+  //   dText.innerHTML = chapterData[counter].desc
 
-  }, []);
+  // }, []);
     
 
    // NAVIGATION JUMP
-   var jumpToChapter = useCallback(() => {
-    AFK=false
-    afkTimer = 0
+  //  var jumpToChapter = useCallback(() => {
+  //   AFK=false
+  //   afkTimer = 0
 
-    counter = 1;
-    setInitialViewState({
-        latitude: chapterData[counter].latitude,
-        longitude: chapterData[counter].longitude,
-        zoom: chapterData[counter].zoom,
-        transitionDuration: chapterData[counter].duration,
-        transitionInterpolator: transition
-    })
-  }, []);
+  //   counter = 1;
+  //   setInitialViewState({
+  //       latitude: chapterData[counter].latitude,
+  //       longitude: chapterData[counter].longitude,
+  //       zoom: chapterData[counter].zoom,
+  //       transitionDuration: chapterData[counter].duration,
+  //       transitionInterpolator: transition
+  //   })
+  // }, []);
 
   const layers = [
 
@@ -319,7 +404,7 @@ const [currentTime, setCurrentTime] = useState(0);
     //     const {
     //       bbox: {west, south, east, north}
     //     } = props.tile;
-  
+        
     //     return new BitmapLayer(props, {
     //       data: null,
     //       image: props.data,
@@ -360,7 +445,7 @@ const [currentTime, setCurrentTime] = useState(0);
 
     new BitmapLayer({
       id: 'panamaBitmap',
-      image: './basemaps/CAD/03a.jpeg',
+      image: './basemaps/BASEMAP-PANAMA - Copy.jpg',
       bounds: [[	-84.071066,6.204412], [-84.071066,10.942168], [-75.646334,10.942168], [-75.646334,6.204412]],
       visible: chapterData[counter].PanamaImg,
       parameters: {
@@ -370,7 +455,7 @@ const [currentTime, setCurrentTime] = useState(0);
 
     new BitmapLayer({
       id: 'darienBitmap',
-      image: './basemaps/CAD/01a.jpeg',
+      image: './basemaps/BASEMAP-DARIEN - Copy.jpg',
       bounds: [[-77.664696,8.078343], [-77.664696,8.789628], [-76.383324,8.789628], [-76.383324,8.078343]],
       visible: chapterData[counter].DarienImg,
       parameters: {
@@ -379,8 +464,8 @@ const [currentTime, setCurrentTime] = useState(0);
     }),
   
     new BitmapLayer({
-      id: 'GuatMexBitmap1',
-      image: './basemaps/CAD/02a.jpeg',
+      id: 'GuatMexBitmap',
+      image: './basemaps/BASEMAP-GUATMAP - COPY.jpg',
       bounds: [[-92.168185,14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
       visible: chapterData[counter].GuatMexImg,
       parameters: {
@@ -398,6 +483,21 @@ const [currentTime, setCurrentTime] = useState(0);
       getDashArray: [4, 5],
       dashJustified: false,
       extensions: [new PathStyleExtension({highPrecisionDash: true})],
+      visible: chapterData[counter].PanamPath,
+  
+    }),
+
+    new PathLayer({
+      id: 'Highway',
+      data: DATA_URL.HIGHWAY,
+      widthScale: 3,
+      widthMinPixels: 2,
+      getPath: d => d.path,
+      getColor: [155,155,155,255],
+      // getDashArray: [4, 5],
+      // dashJustified: false,
+      // extensions: [new PathStyleExtension({highPrecisionDash: true})],
+      visible: chapterData[counter].Highway,
   
     }),
 
@@ -456,20 +556,52 @@ const [currentTime, setCurrentTime] = useState(0);
         depthTest: false
       }
     }),
+
+    new IconLayer({
+      id: 'icon-layer2',
+      data: DATA_URL.SPRITE_MAP,
+      pickable: true,
+      // iconAtlas and iconMapping are required
+      // getIcon: return a string
+      iconAtlas: DATA_URL.SPRITE,
+      iconMapping: ICON_MAPPING2,
+      getIcon: d => d.frames.frame,
+      mask: false,
+      sizeScale: 15,
+      getPosition: d => d.frames.coords,
+      getSize: 500,
+      // getColor: d => [Math.sqrt(d.exits), 140, 0]
+    }),
     
-new TextLayer({
+// new IconLayer({
+//     id: 'icon-layer',
+//     data,
+//     pickable: true,
+//     // iconAtlas and iconMapping are required
+//     // getIcon: return a string
+//     iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
+//     iconMapping: ICON_MAPPING,
+//     getIcon: d => 'marker',
+
+//     sizeScale: 15,
+//     getPosition: d => d.coordinates,
+//     getSize: d => 5,
+//     getColor: d => [Math.sqrt(d.exits), 140, 0]
+//   }),
+
+  new TextLayer({
     id: 'text-layer',
     data: './data/layers/nat.json',
-    fontFamily: 'Arial',
+    fontFamily: 'SpeziaWide',
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
-    getText: d => d.Nationality,
-    getSize: 10,
-    getColor: [255, 255, 255],
+    getText: d => d.Nationality.toUpperCase(),
+    getSize: 8,
+    getColor: [180, 235, 190],
     getAngle: 0, 
     getPixelOffset: [-5,-1],
     fontWeight: 'bold',
-    getTextAnchor: 'end',
+    getTextAnchor: 'middle',
     getAlignmentBaseline: 'bottom',
     visible: chapterData[counter].Countries
 
@@ -487,7 +619,9 @@ new TextLayer({
     //   material: theme.material
     // }),
 
-  ];
+    
+
+  ]
 
   const dataLayers = groups.map(
     (group, index) =>
@@ -504,8 +638,10 @@ new TextLayer({
         getHeight: .2,
         getWidth: 1,   
         timeRange,
-        getSourceColor: [255, 255, 0],
-        getTargetColor: [255, 255, 255],
+        // getSourceColor: [255, 255, 0],
+        getSourceColor: [255, 255, 255],
+        // getTargetColor: [255, 255, 255],
+        getTargetColor: [223 , 195, 40],
         visible: chapterData[counter].AnimatedArcs
       })
   );
@@ -523,12 +659,14 @@ new TextLayer({
     {endTime && (
       <RangeInput
           activate={true}
-          min={50}
+          min={0}
           max={endTime}
           value={currentTime}
           animationSpeed={TIME_WINDOW * 0.2}
 //           formatLabel={formatLabel}
           onChange={setCurrentTime}
+          isPlaying = {isPlaying}
+          reset = {_reset}
           
         />)}
       {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
@@ -547,6 +685,8 @@ new TextLayer({
     </div>
   );
 }
+
+
 
 export function renderToDOM(container) {
   render(<App />, container);

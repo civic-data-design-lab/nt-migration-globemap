@@ -1,0 +1,30 @@
+{"frames": [
+
+{
+	"filename": "busSvg.svg",
+	"frame": {"x":0,"y":0,"w":612,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":612,"h":216},
+	"sourceSize": {"w":612,"h":216},
+	"coords":[-71,-10]
+},
+{
+	"filename": "tent.svg",
+	"frame": {"x":612,"y":0,"w":504,"h":216},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":504,"h":216},
+	"sourceSize": {"w":504,"h":216},
+	"coords":[-71,-10]
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "spriteSheet.png",
+	"format": "RGBA8888",
+	"size": {"w":1116,"h":216},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:7c8d66d1d29db7b7f991f6377c5c92ac:f51fed101ee672a0618c8505193ed7a5:56666da5422bba4f7361f897695c1519$"
+}
+}
