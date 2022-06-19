@@ -633,28 +633,30 @@ var autoTriggerFire;
     // }
 
   }),
-
-  new TextLayer({
-    id: 'text-layer-cost',
-    data: './data/layers/labels_cost_final.json',
-    fontFamily: 'SpeziaWide',
-    pickable: false,
-    getPosition: d => [d.x, d.y],
-    getText: d => d.Accum_cost,
-    getSize: 10,
-    getColor: [180, 235, 190],
-//     getAngle: 180, 
-    getPixelOffset: [-5,-1],
-    fontWeight: 'bold',
-    getTextAnchor: 'end',
-    getAlignmentBaseline: 'bottom',
-    billboard: true,
-    visible: chapterData[counter].PanamPath,
-    parameters: {
-      depthTest: false
-    }
-
-  }),
+// 
+//   new TextLayer({
+//     id: 'text-layer-cost',
+//     data: './data/layers/labels_cost_final.json',
+//     fontFamily: 'SpeziaWide',
+//     pickable: false,
+//     getPosition: d => [d.x, d.y],
+//     getText: d => d.Accum_cost,
+//     getSize: 10,
+//     sizeMinPixels: 10,
+//     sizeMaxPixels: 10,
+//     getColor: [180, 235, 190],
+// //     getAngle: 180, 
+//     getPixelOffset: [-5,-1],
+//     fontWeight: 'bold',
+//     getTextAnchor: 'end',
+//     getAlignmentBaseline: 'bottom',
+//     billboard: true,
+//     visible: chapterData[counter].PanamPath,
+//     parameters: {
+//       depthTest: false
+//     }
+// 
+//   }),
   
     new TextLayer({
     id: 'text-layer-label',
@@ -664,6 +666,8 @@ var autoTriggerFire;
     getPosition: d => [d.x, d.y],
     getText: d => d.final_lab,
     getSize: 10,
+    sizeMinPixels: 10,
+    sizeMaxPixels: 10,
     getColor: [180, 235, 190],
 //     getAngle: 180, 
     getPixelOffset: [-5,-10],
