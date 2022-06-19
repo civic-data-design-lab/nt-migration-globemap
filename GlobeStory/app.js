@@ -1,42 +1,43 @@
 /* global window */
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import {render} from 'react-dom';
-import {StaticMap} from 'react-map-gl';
-import {AmbientLight, PointLight, LightingEffect} from '@deck.gl/core';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { render } from 'react-dom';
+import { StaticMap } from 'react-map-gl';
+import { AmbientLight, PointLight, LightingEffect, Layer } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
-import {PolygonLayer, TextLayer, PathLayer,GeoJsonLayer, IconLayer, BitmapLayer} from '@deck.gl/layers';
-import {TripsLayer} from '@deck.gl/geo-layers';
-import {_GlobeView as GlobeView} from '@deck.gl/core';
+import { PolygonLayer, TextLayer, PathLayer, GeoJsonLayer, IconLayer, BitmapLayer } from '@deck.gl/layers';
+import { TripsLayer } from '@deck.gl/geo-layers';
+import { _GlobeView as GlobeView } from '@deck.gl/core';
 // import {BitmapLayer} from '@deck.gl/layers';
-import {FlyToInterpolator, LinearInterpolator} from 'deck.gl';
+import { FlyToInterpolator, LinearInterpolator, ScatterplotLayer } from 'deck.gl';
 import AnimatedArcLayer from './animated-arc-layer';
-import {sliceData, getDate} from './slice-data';
-import {load} from '@loaders.gl/core';
-import {CSVLoader} from '@loaders.gl/csv';
+import { sliceData, getDate } from './slice-data';
+import { load } from '@loaders.gl/core';
+import { CSVLoader } from '@loaders.gl/csv';
 import RangeInput from './range-input';
-import {PathStyleExtension} from '@deck.gl/extensions';
-import {TileLayer} from '@deck.gl/geo-layers';
+import { PathStyleExtension } from '@deck.gl/extensions';
 
 // chapters
 const chapterData = require('./mapChapters.json');
 var AFK = true
 var afkTimer = 0
 // set the AFK timeout
-const idleLimit = 30000; 
-var startMapIndex = false 
+const idleLimit = 30000;
+var startMapIndex = false
 var _reset = false
 var arrowInit = false
 var arrowTimer = 0
 var autoTransBool = false
 var autoTransTimer = 0
-
-
+var ramp = false
+var rampVal = 0;
+var opacityTransitionSpeed = 10
+var fadeTransDuration = 1500;
 
 // Source data CSV
 const DATA_URL = {
   // BUILDINGS:
-    // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
-  TRIPS: './data/PANAMV3.json', // eslint-disable-line
+  // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
+  TRIPS: './data/PANAM-ULTIMATE.json', // eslint-disable-line
   PATH_COST: './data/PANAM-NEW.json',
   HIGHWAY: './data/Highway.json',
   SPRITE: "./svg/spriteSheet.png",
@@ -44,7 +45,7 @@ const DATA_URL = {
 };
 
 const ICON_MAPPING = {
-  marker: {x: 0, y: 0, width: 128, height: 128, mask: true}
+  marker: { x: 0, y: 0, width: 128, height: 128, mask: true }
 };
 
 const ICON_MAPPING2 = require('./svg/sprite.json')
@@ -68,7 +69,7 @@ const pointLight = new PointLight({
   position: [-74.05, 40.7, 8000]
 });
 
-const lightingEffect = new LightingEffect({ambientLight, pointLight});
+const lightingEffect = new LightingEffect({ ambientLight, pointLight });
 
 const material = {
   ambient: 0.1,
@@ -106,14 +107,14 @@ const DEFAULT_THEME = {
 
 // FUNCTIONS
 // function to enable local JS
-function toggleArrows(jsonSource,index, bool){
+function toggleArrows(jsonSource, index, bool) {
 
   const dArr = document.getElementById('darienArrows')
   const pArr = document.getElementById('panamaArrows')
   const gArr = document.getElementById('guatmexArrows')
   const place = ['darien', 'panama', 'guatmex']
-  
-  const elements = [dArr,pArr,gArr]
+
+  const elements = [dArr, pArr, gArr]
 
   const select = jsonSource[index]
   const timer = select.duration
@@ -121,45 +122,45 @@ function toggleArrows(jsonSource,index, bool){
 
   for (let i = 0; i < zooms.length; i++) {
     const shape = elements[i].getElementsByClassName(place[i])
-    
-    if (zooms[i] != 1){
+
+    if (zooms[i] != 1) {
       for (let v = 0; v < shape.length; v++) {
         // console.log(shape)
         shape[v].style.opacity = 0
       }
-      
-      if (bool == true){
+
+      if (bool == true) {
         setTimeout(() => {
           elements[i].style.display = 'none'
         }, 0);
       }
 
-     
-    }else{
+
+    } else {
       for (let v = 0; v < shape.length; v++) {
         shape[v].style.opacity = 1
-        
+
       }
 
-      if (bool == true){
+      if (bool == true) {
         setTimeout(() => {
-          if (index == 0){
+          if (index == 0) {
             elements[i].style.pointerEvents = 'none'
           }
-          else{
+          else {
             elements[i].style.pointerEvents = 'auto'
           }
           return elements[i].style.display = 'inherit'
-  
+
         }, 0);
-        
+
       }
 
-    
-    } 
-    }
 
+    }
   }
+
+}
 
 
 export default function App({
@@ -170,37 +171,67 @@ export default function App({
   // initialViewState = INITIAL_VIEW_STATE,
   // mapStyle = MAP_STYLE,
   theme = DEFAULT_THEME,
-  loopLength = 12000, // unit corresponds to the timestamp in source data
-  animationSpeed = 1,
-  data
+  loopLength = 21000, // unit corresponds to the timestamp in source data
+  animationSpeed = 1.5,
+  data,
 }) {
+  
+  const [opacityHook, setOpacityHook] = useState(0);
 
+
+  if (ramp == true){
+    // rampVal++
+    // setTimeout(() => {
+    //   setOpacityHook(rampVal/(100*opacityTransitionSpeed))
+    //   console.log(rampVal/(100*opacityTransitionSpeed))
+    //   if(rampVal/(100*opacityTransitionSpeed) >= 1){
+    //     ramp = false
+    //   }
+    // }, 250);
+
+  
+  }
+
+ 
+  // if(ramp == true){
+
+  //   if(rampVal<=1){
+  //     rampVal++
+  //     const newO = rampVal/100
+  //     console.log(new0)
+  //     setOpacityHook(newO)
+  //   }
+  //   else{
+  //     ramp = false
+  //   }
+
+  // }
 
   // get start state
-  if (startMapIndex == false){
+  if (startMapIndex == false) {
     for (let i = 0; i < chapterData.length; i++) {
-      if(chapterData[i].name != 'NaN' && startMapIndex == false){
+      if (chapterData[i].name != 'NaN' && startMapIndex == false) {
         startMapIndex = i
       }
-      
+
     }
   }
 
-const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-const [currentTime, setCurrentTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const groups = useMemo(() => sliceData(data), [data]);
   const endTime = useMemo(() => {
     return groups.reduce((max, group) => Math.max(max, group.endTime), 0);
   }, [groups]);
 
   const timeRange = [currentTime, currentTime + TIME_WINDOW];
-  
+
   const [initialViewState, setInitialViewState] = useState({
     latitude: chapterData[startMapIndex].latitude,
     longitude: chapterData[startMapIndex].longitude,
     zoom: chapterData[startMapIndex].zoom,
-    
+
   });
 
   const [time, setTime] = useState(0);
@@ -228,89 +259,106 @@ const [currentTime, setCurrentTime] = useState(0);
       zoom: chapterData[startMapIndex].zoom,
       transitionDuration: chapterData[startMapIndex].duration,
       transitionInterpolator: transition,
-      transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+      transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
     })
-    
-    }, []);
 
-  if(AFK == false){
+  }, []);
+
+  if (AFK == false) {
     afkTimer++
-    if(afkTimer > idleLimit){
-      setTimeout(timeoutReset,0)
+    if (afkTimer > idleLimit) {
+      setTimeout(timeoutReset, 0)
       AFK = true
     }
   }
 
   // text type function
-function typeWriter(speed, source, sourceLen, target, base) {
-  if (base < sourceLen) {
-    target.innerHTML += source.charAt(base);
-    base++;
-    setTimeout(typeWriter,speed, speed, source, sourceLen, target, base);
+  function typeWriter(speed, source, sourceLen, target, base) {
+    if (base < sourceLen) {
+      target.innerHTML += source.charAt(base);
+      base++;
+      setTimeout(typeWriter, speed, speed, source, sourceLen, target, base);
+    }
   }
-}
 
-if (arrowInit == true){
-  arrowTimer++
-  if (arrowTimer > 100){
-    arrowInit = false
-    arrowTimer = 0
-    toggleArrows(chapterData, counter, true)
+  if (arrowInit == true) {
+    arrowTimer++
+    if (arrowTimer > 100) {
+      arrowInit = false
+      arrowTimer = 0
+      toggleArrows(chapterData, counter, true)
 
+    }
   }
-}
 
-if (autoTransBool != 0){
-  autoTransTimer++
-  console.log(autoTransTimer)
-  if (autoTransTimer > chapterData[counter].autoTransition){
-    counter+autoTransBool
-    autoTransBool = 0
-    {nextChapter()}
+  if (autoTransBool != 0) {
+    autoTransTimer++
+
+    if (autoTransTimer > chapterData[counter].autoTransition) {
+      counter + autoTransBool
+      autoTransBool = 0
+      { nextChapter() }
+    }
   }
-}
 
-var autoTriggerFire;
+  var autoTriggerFire;
+
+
+
 
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
-    AFK=false
+    var transferCounter = counter //used to hold initial counter variable before flipping from i=0 > -1
+    AFK = false
     afkTimer = 0
     counter++
 
+    ramp = true
+
+
     // enable arc animation
-    if(counter == 2){
+    if (counter == 2) {
       setIsPlaying(true)
     }
-   
-  
+
+    if(counter <= 3){
+      document.getElementsByClassName('halo')[0].style.display=''
+    }
+
+
+
+    if(counter > 3){
+      document.getElementsByClassName('halo')[0].style.display='none'
+    }
+
+
     // reset arc animation
-    if(counter >= chapterData.length){
+    if (counter >= chapterData.length) {
       // RESET STORY AFTER COMPLETING NARRATIVE
       setIsPlaying(false)
       _reset = true
-  
+
       setInitialViewState({
         latitude: chapterData[startMapIndex].latitude,
         longitude: chapterData[startMapIndex].longitude,
         zoom: chapterData[startMapIndex].zoom,
         transitionDuration: chapterData[startMapIndex].duration,
         transitionInterpolator: transition,
-        transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+        transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
       })
       counter = 0
-      
+
     }
-  
+
     // CHANGE CAMERA VIEW THROUGH STORY
-    if(chapterData[counter].name != 'NaN'){
+    if (chapterData[counter].name != 'NaN') {
       setInitialViewState({
         latitude: chapterData[counter].latitude,
         longitude: chapterData[counter].longitude,
         zoom: chapterData[counter].zoom,
         transitionDuration: chapterData[counter].duration,
         transitionInterpolator: transition,
-        transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
+        transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
       })
     }
 
@@ -325,16 +373,16 @@ var autoTriggerFire;
     const dText = document.getElementById('description')
     const narImg = document.getElementById('narrativeImg')
     narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
-    
 
-    if(chapterData[counter].header==""){
+
+    if (chapterData[counter].header == "") {
       _flare.innerHTML = ""
     }
-    else{
+    else {
       _flare.innerHTML = "|"
     }
 
-    var typeSpeed =100;
+    var typeSpeed = 100;
     header.innerHTML = ""
     sText.innerHTML = ""
     var headText = chapterData[counter].header
@@ -347,186 +395,233 @@ var autoTriggerFire;
 
     dText.innerHTML = chapterData[counter].desc
 
-    if (autoTriggerFire != null){
+    if (autoTriggerFire != null) {
       clearTimeout(autoTriggerFire)
     }
 
-    if (chapterData[counter].autoTransition != ""){
-      autoTriggerFire = setTimeout(() => {nextChapter()}, chapterData[counter].duration + chapterData[counter].autoTransition)      
+    if (chapterData[counter].autoTransition != "") {
+      autoTriggerFire = setTimeout(() => { nextChapter() }, chapterData[counter].duration + chapterData[counter].autoTransition)
+    }
+
+    // ACTIVATE SVG OVERLAY
+    var svgNarrative = document.getElementsByClassName("narrativeBox")
+
+    if (chapterData[counter].svgOverlay > 0) {
+      let searchIndex = chapterData[counter].svgOverlay
+      var selectBox = svgNarrative[searchIndex-1]
+      
+      selectBox.style.display = "inherit"
+      setTimeout(() => { selectBox.style.opacity = 1    
+      }, chapterData[counter].duration);
+     
+    }
+
+    // SVG TOGGLE
+    if (chapterData[counter].svgOverlay == "") {
+      let searchIndex = chapterData[transferCounter].svgOverlay
+
+      if(svgNarrative[searchIndex-1]!=null){ //subtract 1 to consider index starts at 0 while list starts at 1
+        var selectBox = svgNarrative[searchIndex-1]
+        selectBox.style.opacity = 0   
+  
+        setTimeout(() => {
+          selectBox.style.display = "none"
+        }, 1000);        
+      }
+        
+    }
+
+  }
+
+    , []);
+
+
+  // NAVIGATION FORWARD
+  var prevChapter = useCallback(() => {
+    var transferCounter = counter //used to hold initial counter variable before flipping from i=0 > -1
+    AFK = false
+    afkTimer = 0
+    counter--;
+
+    // disable arc animation
+    if (counter < 2) {
+      setIsPlaying(false)
+      _reset = true
     }
 
 
-    }, []);
+    // flip counters
+    if (counter < 0) {
+      counter = chapterData.length - 1
+    }
 
-    // console.log('ok')
+    // CHANGE CAMERA VIEW THROUGH STORY
+    if (chapterData[counter].name != 'NaN') {
+      setInitialViewState({
+        latitude: chapterData[counter].latitude,
+        longitude: chapterData[counter].longitude,
+        zoom: chapterData[counter].zoom,
+        transitionDuration: chapterData[counter].duration,
+        transitionInterpolator: transition,
+        transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
+      })
+    }
+
+    arrowInit = true
+    toggleArrows(chapterData, counter, false)
+
+    //toggle narrativeChapters
+    const header = document.getElementById('narrativeText')
+    const _flare = document.getElementById('flare')
+    const sText = document.getElementById('subText')
+    const dText = document.getElementById('description')
+    const narImg = document.getElementById('narrativeImg')
+    narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
 
 
-    // if (counter>0){
-    // console.log(autoTriggerFire)}
+    if (chapterData[counter].header == "") {
+      _flare.innerHTML = ""
+    }
+    else {
+      _flare.innerHTML = "|"
+    }
 
-    // NAVIGATION FORWARD
-    var prevChapter = useCallback(() => {
-      AFK=false
-      afkTimer = 0
-      counter--;
-  
-      // disable arc animation
-      if(counter < 2){
-        setIsPlaying(false)
-        _reset = true
-      }
-     
-  
-      // flip counters
-      if(counter < 0){
-        counter = chapterData.length-1
-      }
+    var typeSpeed = 100;
+    header.innerHTML = ""
+    sText.innerHTML = ""
+    var headText = chapterData[counter].header
+    var headTextLen = chapterData[counter].header.length
+    var h2Text = chapterData[counter].subText
+    var h2TextLen = chapterData[counter].subText.length
+
+    typeWriter(typeSpeed, headText, headTextLen, header, -1)
+    typeWriter(typeSpeed, h2Text, h2TextLen, sText, -1)
+
+    dText.innerHTML = chapterData[counter].desc
+
+
+    if (autoTriggerFire != null) {
+      clearTimeout(autoTriggerFire)
+    }
+
+    if (chapterData[counter].autoTransition != "") {
+      autoTriggerFire = setTimeout(() => { prevChapter() }, chapterData[counter].duration + chapterData[counter].autoTransition)
+    }
+
     
-      // CHANGE CAMERA VIEW THROUGH STORY
-      if(chapterData[counter].name != 'NaN'){
-        setInitialViewState({
-          latitude: chapterData[counter].latitude,
-          longitude: chapterData[counter].longitude,
-          zoom: chapterData[counter].zoom,
-          transitionDuration: chapterData[counter].duration,
-          transitionInterpolator: transition,
-          transitionEasing: t => (0.76*t, 0*t, 0.24*t, 1*t),
-        })
-      }
+    // ACTIVATE SVG OVERLAY
+    var svgNarrative = document.getElementsByClassName("narrativeBox")
 
-      arrowInit = true
-      toggleArrows(chapterData, counter, false)
-  
-      //toggle narrativeChapters
-      const header = document.getElementById('narrativeText')
-      const _flare = document.getElementById('flare')
-      const sText = document.getElementById('subText')
-      const dText = document.getElementById('description')
-      const narImg = document.getElementById('narrativeImg')
-      narImg.style.backgroundImage = 'url(' + chapterData[counter].imageUrl + ')'
+    if (chapterData[counter].svgOverlay > 0) {
+      let searchIndex = chapterData[counter].svgOverlay
+      var selectBox = svgNarrative[searchIndex-1]
       
-  
-      if(chapterData[counter].header==""){
-        _flare.innerHTML = ""
-      }
-      else{
-        _flare.innerHTML = "|"
-      }
-  
-      var typeSpeed =100;
-      header.innerHTML = ""
-      sText.innerHTML = ""
-      var headText = chapterData[counter].header
-      var headTextLen = chapterData[counter].header.length
-      var h2Text = chapterData[counter].subText
-      var h2TextLen = chapterData[counter].subText.length
-  
-      typeWriter(typeSpeed, headText, headTextLen, header, -1)
-      typeWriter(typeSpeed, h2Text, h2TextLen, sText, -1)
-  
-      dText.innerHTML = chapterData[counter].desc
+      selectBox.style.display = "inherit"
+      setTimeout(() => { selectBox.style.opacity = 1    
+      }, chapterData[counter].duration);
+     
+    }
 
-      
-      if (autoTriggerFire != null){
-        clearTimeout(autoTriggerFire)
+    // SVG TOGGLE
+    if (chapterData[counter].svgOverlay == "") {
+      let searchIndex = chapterData[transferCounter].svgOverlay
+
+      if(svgNarrative[searchIndex+1]!=null){
+        var selectBox = svgNarrative[searchIndex-1]
+        selectBox.style.opacity = 0   
+  
+        setTimeout(() => {
+          selectBox.style.display = "none"
+        }, 1000);        
       }
-  
-      if (chapterData[counter].autoTransition != ""){
-        autoTriggerFire = setTimeout(() => {prevChapter()}, chapterData[counter].duration + chapterData[counter].autoTransition)      
-      }
-  
-  
-      }, []);
+        
+    }
+
+
+
+  }, []);
 
 
   const layers = [
 
-    // This is only needed when using shadow effects
-    // new PolygonLayer({
-    //   id: 'ground',
-    //   data: landCover,
-    //   getPolygon: f => f,
-    //   stroked: false,
-    //   getFillColor: [0, 0, 0, 0]
-    // }),
-
-    // new TileLayer({
-    //   data: 'https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/1/1/0@2x?access_token=pk.eyJ1IjoibWl0Y2l2aWNkYXRhIiwiYSI6ImNpbDQ0aGR0djN3MGl1bWtzaDZrajdzb28ifQ.quOF41LsLB5FdjnGLwbrrg&zoomwheel=true&fresh=true#3.92/5.14/-69.46',
-    //   minZoom: 0,
-    //   maxZoom: 19,
-    //   tileSize: 1080,
-  
-    //   renderSubLayers: props => {
-    //     const {
-    //       bbox: {west, south, east, north}
-    //     } = props.tile;
-        
-    //     return new BitmapLayer(props, {
-    //       data: null,
-    //       image: props.data,
-    //       bounds: [west, south, east, north]
-    //     });
-    //   }
-    // }),
-
-    // new GeoJsonLayer({
-    //   id: 'earth-land',
-    //   data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson',
-    //   // Styles
-    //   stroked: true,
-    //   filled: true,
-    //   // opacity: 1,
-    //   getStrokeColor: [255,255,255],
-    //   getLineWidth:5,
-    //   getFillColor: [0,0,0],
-    //   parameters:{
-    //     cull:true
-    //   }
-    // }),
-
     new BitmapLayer({
       id: 'BitmapLayer',
       image: './basemaps/CAD/WorldTilesetBlack.jpg',
-      bounds: [[-180, -90,-35000], [-180, 90,-35000], [180, 90,-35000], [180, -90,-35000]],
-      visible: chapterData[counter].worldTile,
-      // opacity: opacityRamp
+      bounds: [[-180, -90, -35000], [-180, 90, -35000], [180, 90, -35000], [180, -90, -35000]],
+      // visible: chapterData[counter].worldTile,
+      opacity: chapterData[counter].worldTile,
+      transitions:{
+      opacity: {
+        duration: 2000,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
+      // opacity: opacityHook
     }),
 
     new BitmapLayer({
       id: 'saBitmap',
       image: './basemaps/CAD/SATilesetBlack.jpg',
-      bounds: [[-125.704377, -58.123691], [-125.704377, 	37.286326], [	-30.290414, 	37.286326], [	-30.290414, -58.123691]],
-      visible: chapterData[counter].SaTile,
+      bounds: [[-125.704377, -58.123691], [-125.704377, 37.286326], [-30.290414, 37.286326], [-30.290414, -58.123691]],
+      // visible: chapterData[counter].SaTile,
+      opacity: chapterData[counter].SaTile,
+      transitions:{
+        opacity: {
+          duration: 2000,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
     }),
 
     new BitmapLayer({
       id: 'panamaBitmap',
       image: './basemaps/BASEMAP-PANAMA - Copy.jpg',
-      bounds: [[	-84.071066,6.204412], [-84.071066,10.942168], [-75.646334,10.942168], [-75.646334,6.204412]],
-      visible: chapterData[counter].PanamaImg,
+      bounds: [[-84.071066, 6.204412], [-84.071066, 10.942168], [-75.646334, 10.942168], [-75.646334, 6.204412]],
+      // visible: chapterData[counter].PanamaImg,
+      opacity: chapterData[counter].PanamaImg,
       parameters: {
         depthTest: false
-      }
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
     }),
 
     new BitmapLayer({
       id: 'darienBitmap',
       image: './basemaps/BASEMAP-DARIEN - Copy.jpg',
-      bounds: [[-77.664696,8.078343], [-77.664696,8.789628], [-76.383324,8.789628], [-76.383324,8.078343]],
-      visible: chapterData[counter].DarienImg,
+      bounds: [[-77.664696, 8.078343], [-77.664696, 8.789628], [-76.383324, 8.789628], [-76.383324, 8.078343]],
+      // visible: chapterData[counter].DarienImg,
+      opacity: chapterData[counter].DarienImg,
       parameters: {
         depthTest: false
-      }
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
     }),
-  
+
     new BitmapLayer({
       id: 'GuatMexBitmap',
       image: './basemaps/BASEMAP-GUATMAP - COPY.jpg',
-      bounds: [[-92.168185,14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
-      visible: chapterData[counter].GuatMexImg,
+      bounds: [[-92.168185, 14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
+      // visible: chapterData[counter].GuatMexImg,
+      opacity: chapterData[counter].GuatMexImg,
       parameters: {
         depthTest: false
-      }
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
     }),
 
     new PathLayer({
@@ -535,12 +630,19 @@ var autoTriggerFire;
       widthScale: 2,
       widthMinPixels: 2,
       getPath: d => d.path,
-      getColor: [255,255,255,255],
+      getColor: [255, 255, 255, 255],
       getDashArray: [4, 5],
       dashJustified: false,
-      extensions: [new PathStyleExtension({highPrecisionDash: true})],
-      visible: chapterData[counter].PanamPath,
-  
+      extensions: [new PathStyleExtension({ highPrecisionDash: true })],
+      // visible: chapterData[counter].PanamPath,
+      opacity: chapterData[counter].PanamPath,
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
+
     }),
 
     new PathLayer({
@@ -549,12 +651,19 @@ var autoTriggerFire;
       widthScale: 3,
       widthMinPixels: 2,
       getPath: d => d.path,
-      getColor: [155,155,155,255],
+      getColor: [155, 155, 155, 255],
       // getDashArray: [4, 5],
       // dashJustified: false,
       // extensions: [new PathStyleExtension({highPrecisionDash: true})],
-      visible: chapterData[counter].Highway,
-  
+      // visible: chapterData[counter].Highway,
+      opacity: chapterData[counter].Highway,
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
+
     }),
 
     new TripsLayer({
@@ -564,7 +673,7 @@ var autoTriggerFire;
       getTimestamps: d => d.timestamps,
       getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
       opacity: 1,
-      widthMinPixels:5,
+      widthMinPixels: 5,
       // widthMaxPixels:3,
       capRounded: true,
       jointRounded: true,
@@ -572,29 +681,36 @@ var autoTriggerFire;
       currentTime: time,
       shadowEnabled: false,
       fadeTrail: true,
-      visible: chapterData[counter].Trips,
+      // visible: chapterData[counter].Trips,
+      opacity: chapterData[counter].Trips,
       parameters: {
         depthTest: false
-      }
-      
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
+
     }),
 
-  
-    new IconLayer({
-      id: 'icon-layer2',
-      data: DATA_URL.SPRITE_MAP,
-      pickable: true,
-      // iconAtlas and iconMapping are required
-      // getIcon: return a string
-      iconAtlas: DATA_URL.SPRITE,
-      iconMapping: ICON_MAPPING2,
-      getIcon: d => d.frames.frame,
-      mask: false,
-      sizeScale: 15,
-      getPosition: d => d.frames.coords,
-      getSize: 500,
-      // getColor: d => [Math.sqrt(d.exits), 140, 0]
-    }),
+
+    // new IconLayer({
+    //   id: 'icon-layer2',
+    //   data: DATA_URL.SPRITE_MAP,
+    //   pickable: true,
+    //   // iconAtlas and iconMapping are required
+    //   // getIcon: return a string
+    //   iconAtlas: DATA_URL.SPRITE,
+    //   iconMapping: ICON_MAPPING2,
+    //   getIcon: d => d.frames.frame,
+    //   mask: false,
+    //   sizeScale: 15,
+    //   getPosition: d => d.frames.coords,
+    //   getSize: 500,
+    //   // getColor: d => [Math.sqrt(d.exits), 140, 0]
+    // }),
     
 // new IconLayer({
 //     id: 'icon-layer',
@@ -613,13 +729,13 @@ var autoTriggerFire;
 //   }),
 
   new TextLayer({
-    id: 'text-layer',
+    id: 'text-country',
     data: './data/layers/arrF.json',
     fontFamily: 'SpeziaWide',
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality.toUpperCase(),
-    getSize: 14,
+    getSize: 12,
     getColor: [180, 235, 190],
     getAngle: 180, 
     getPixelOffset: [-5,-1],
@@ -627,10 +743,14 @@ var autoTriggerFire;
     getTextAnchor: 'end',
     getAlignmentBaseline: 'bottom',
     billboard: false,
-    visible: chapterData[counter].Countries,
-    // parameters: {
-    //   depthTest: false
-    // }
+    // visible: chapterData[counter].Countries,
+    opacity: chapterData[counter].Countries,
+    transitions:{
+      opacity: {
+        duration: fadeTransDuration,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
 
   }),
 // 
@@ -658,52 +778,96 @@ var autoTriggerFire;
 // 
 //   }),
   
+//     new TextLayer({
+//     id: 'text-layer-label',
+//     data: './data/layers/labels_cost_final.json',
+//     fontFamily: 'SpeziaWide',
+//     pickable: false,
+//     getPosition: d => [d.x, d.y],
+//     getText: d => d.final_lab,
+//     getSize: 10,
+//     sizeMinPixels: 10,
+//     sizeMaxPixels: 10,
+//     getColor: [180, 235, 190],
+// //     getAngle: 180, 
+//     getPixelOffset: [-5,-10],
+//     fontWeight: 'bold',
+//     getTextAnchor: 'end',
+//     getAlignmentBaseline: 'bottom',
+//     billboard: true,
+//     visible: chapterData[counter].PanamPath,
+//     parameters: {
+//       depthTest: false
+//     }
+
+//     }),
+
     new TextLayer({
-    id: 'text-layer-label',
-    data: './data/layers/labels_cost_final.json',
-    fontFamily: 'SpeziaWide',
-    pickable: false,
-    getPosition: d => [d.x, d.y],
-    getText: d => d.final_lab,
-    getSize: 10,
-    sizeMinPixels: 10,
-    sizeMaxPixels: 10,
-    getColor: [180, 235, 190],
-//     getAngle: 180, 
-    getPixelOffset: [-5,-10],
-    fontWeight: 'bold',
-    getTextAnchor: 'end',
-    getAlignmentBaseline: 'bottom',
-    billboard: true,
-    visible: chapterData[counter].PanamPath,
-    parameters: {
-      depthTest: false
-    }
+      id: 'text-layer-cost',
+      data: './data/layers/labels_cost_final.json',
+      fontFamily: 'SpeziaWide',
+      pickable: false,
+      getPosition: d => [d.x, d.y],
+      getText: d => d.Accum_cost,
+      getSize: 10,
+      getColor: [180, 235, 190],
+      //     getAngle: 180, 
+      getPixelOffset: [-5, -1],
+      fontWeight: 'bold',
+      getTextAnchor: 'end',
+      getAlignmentBaseline: 'bottom',
+      billboard: true,
+      sizeMaxPixels: 1,
+      // visible: chapterData[counter].PanamPath,
+      opacity: chapterData[counter].PanamPath,
+      parameters: {
+        depthTest: false
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+        }
 
-  }),
+    }),
 
+    new TextLayer({
+      id: 'text-layer-label',
+      data: './data/layers/labels_cost_final.json',
+      fontFamily: 'SpeziaWide',
+      pickable: false,
+      getPosition: d => [d.x, d.y],
+      getText: d => d.final_lab,
+      getSize: 10,
+      getColor: [180, 235, 190],
+      //     getAngle: 180, 
+      getPixelOffset: [-5, -10],
+      fontWeight: 'bold',
+      getTextAnchor: 'end',
+      getAlignmentBaseline: 'bottom',
+      billboard: true,
+      sizeMaxPixels: 1,
+      // visible: chapterData[counter].PanamPath,
+      opacity: chapterData[counter].PanamPath,
+      parameters: {
+        depthTest: false
+      },
+      transitions:{
+        opacity: {
+          duration: fadeTransDuration,
+          enter: value => [value[0], value[1], value[2], 0] // fade in
+          },
+      }
 
-    // new PolygonLayer({
-    //   id: 'buildings',
-    //   data: buildings,
-    //   extruded: true,
-    //   wireframe: false,
-    //   opacity: 0.5,
-    //   getPolygon: f => f.polygon,
-    //   getElevation: f => f.height,
-    //   getFillColor: theme.buildingColor,
-    //   material: theme.material
-    // }),
-
-    
-
+    }),
   ]
 
   const dataLayers = groups.map(
     (group, index) =>
-    
+
       new AnimatedArcLayer({
-      
+
         id: `flights-${index}`,
         data: group.flights,
         getSourcePosition: d => [d.lon2, d.lat2, d.alt1],
@@ -712,41 +876,50 @@ var autoTriggerFire;
         getTargetTimestamp: d => d.time2,
         getTilt: d => d.tilt,
         getHeight: .2,
-        getWidth: 1,   
+        getWidth: 2,
         timeRange,
-        // getSourceColor: [255, 255, 0],
-        getTargetColor: [255, 255, 255],
-        // getTargetColor: [255, 255, 255],
-        getSourceColor: [235 , 168, 94],
-        visible: chapterData[counter].AnimatedArcs
-      })
-  );
+        getTargetColor: [215, 215, 0, [25]],
+        getSourceColor: [215, 215, 0, [25]],
+        // visible: chapterData[counter].AnimatedArcs,
+        opacity: chapterData[counter].AnimatedArcs,
+        // transitions:{
+        //   opacity: {
+        //     duration: fadeTransDuration,
+        //     enter: value => [value[0], value[1], value[2], 0] // fade in
+        //     },
+        // }
+      }),
+  
+  )
 
   return (
     <div>
-    <DeckGL
-      layers={[layers,dataLayers]}
-      // layers={[layers]}
-      effects={theme.effects}
-      views={new GlobeView()}
-      initialViewState={initialViewState}
-      controller={true}
-    >
-    {endTime && (
-      <RangeInput
-          activate={true}
-          min={0}
-          max={endTime}
-          value={currentTime}
-          animationSpeed={TIME_WINDOW * 0.2}
-//           formatLabel={formatLabel}
-          onChange={setCurrentTime}
-          isPlaying = {isPlaying}
-          reset = {_reset}
-          
-        />)}
-      {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
-    </DeckGL>
+      <div className='halo back'>
+      </div>
+      <DeckGL
+        layers={[layers, dataLayers]}
+        // layers={[layers]}
+        effects={theme.effects}
+        views={new GlobeView()}
+        initialViewState={initialViewState}
+        controller={true}
+      >
+        {endTime && (
+          <RangeInput
+            activate={true}
+            min={0}
+            max={endTime}
+            value={currentTime}
+            animationSpeed={TIME_WINDOW * 0.2}
+            //           formatLabel={formatLabel}
+            onChange={setCurrentTime}
+            isPlaying={isPlaying}
+            reset={_reset}
+
+          />)}
+        {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
+      </DeckGL>
+      {/* <div className="halo front" style={width=20 +'vh'}></div> */}
       <div id='narrativeImg'></div>
       <div id='narrativeContainer'>
         <span id='narrativeText' >DISTANCE UNKNOWN</span><span id='flare'>|</span>
@@ -759,7 +932,7 @@ var autoTriggerFire;
       </div>
     </div>
   );
-} 
+}
 
 export function renderToDOM(container) {
   render(<App />, container);
@@ -769,13 +942,14 @@ export function renderToDOM(container) {
     const data = [];
     for (const date of dates) {
       const url = `${DATA_GLOBE}/${date}.csv`;
-      const flights = await load(url, CSVLoader, {csv: {skipEmptyLines: true}});
-      data.push({flights, date});
+      const flights = await load(url, CSVLoader, { csv: { skipEmptyLines: true } });
+      data.push({ flights, date });
       render(<App data={data} />, container);
     }
   }
-  
+
 
   loadData([
     '2020-01-14'
-  ]);}
+  ]);
+}

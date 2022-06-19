@@ -10,6 +10,7 @@
 }
 
 
+
 @keyframes glow {
     0% {
         color: none;
@@ -42,9 +43,6 @@ body {
     overflow: hidden; 
     fill:black; 
     background: black;
-
-
-    /* cursor: none !important; */
 }
 
 
@@ -112,7 +110,9 @@ body {
     height: 100vh;
     pointer-events: none;
     background-image: url("img/placeholder.png");
-    background-size: auto 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     transition: 1.5s ease-in-out;
     opacity: 1;
 
@@ -184,3 +184,24 @@ body {
   animation: typewriter 4s steps(44) 1s 1 normal both,
              blinkTextCursor 1000ms steps(44) infinite normal;
 }
+
+.halo{
+    width: 40vh;
+    height: 40vh;
+    position: absolute;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    pointer-events: none;
+}
+
+.back{
+    background-color: rgb(151, 205, 234);
+    z-index: -1;
+    filter: blur(4vw);
+}
+
