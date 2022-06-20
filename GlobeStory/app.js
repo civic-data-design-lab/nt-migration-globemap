@@ -334,14 +334,6 @@ export default function App({
       setIsPlaying(true)
     }
 
-    if(counter <= 3){
-      document.getElementsByClassName('halo')[0].style.display=''
-    }
-
-    if(counter > 3){
-      document.getElementsByClassName('halo')[0].style.display='none'
-    }
-
 
 
 
@@ -367,6 +359,15 @@ export default function App({
       counter = 0
 
     }
+
+    if(counter <= 3){
+      document.getElementsByClassName('halo')[0].style.display=''
+    }
+
+    if(counter > 3){
+      document.getElementsByClassName('halo')[0].style.display='none'
+    }
+
 
     // CHANGE CAMERA VIEW THROUGH STORY
     if (chapterData[counter].name != 'NaN') {

@@ -71,7 +71,7 @@
 
 
 .narrativeBox,.narrativeDrawings{
-    width: 100%;
+    width: 101%;
     height: auto;
     /* border: 3px solid tomato; */
     transition: 0.5s ease-in-out;
@@ -86,7 +86,7 @@
 .narrativeTextBox{
   width: 100%;
   height: auto;
-  border: 3px solid tomato;
+  /* border: 3px solid tomato; */
   transition: 0.5s ease-in-out;
   display: none;
   opacity: 1;
