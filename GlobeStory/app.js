@@ -32,7 +32,7 @@ var ramp = false
 var rampVal = 0;
 var opacityTransitionSpeed = 10
 var fadeTransDuration = 1500;
-
+var startIndicator;
 // Source data CSV
 const DATA_URL = {
   // BUILDINGS:
@@ -314,10 +314,22 @@ export default function App({
     afkTimer = 0
     counter++
 
+
     ramp = true
 
-    // console.log('bang')
-    // enable arc animation
+
+
+    if (counter == 1){
+
+      if (document.getElementById('info') != null){
+        
+        startIndicator = document.getElementById('info')
+      }
+   
+      document.getElementById('info').style.opacity = 0
+    }
+
+
     if (counter == 2) {
       setIsPlaying(true)
     }
@@ -326,18 +338,23 @@ export default function App({
       document.getElementsByClassName('halo')[0].style.display=''
     }
 
-
-
     if(counter > 3){
       document.getElementsByClassName('halo')[0].style.display='none'
     }
 
 
+
+
     // reset arc animation
     if (counter >= chapterData.length) {
       // RESET STORY AFTER COMPLETING NARRATIVE
+      document.getElementById('info').style.opacity = 1
+      // var startMenu = document.getElementById('btnContainer') 
+      // startMenu.insertBefore(startIndicator, startMenu.children[0] )
+
       setIsPlaying(false)
       _reset = true
+    
 
       setInitialViewState({
         latitude: chapterData[startMapIndex].latitude,
@@ -639,10 +656,7 @@ export default function App({
           }
         }
 
-    
-
-    
-
+  
   }, []);
 
 
@@ -1040,6 +1054,7 @@ export default function App({
       </div>
       <div className="btnContainer" id='btnContainer'>
         {/* <div className='btn' onClick={prevChapter}>◀</div> */}
+        <div className='info' id="info" >TOUCH TO BEGIN</div>
         <div className='btn' onClick={nextChapter}>▶</div>
       </div>
     </div>
