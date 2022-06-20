@@ -291,20 +291,21 @@ export default function App({
     }
   }
 
-  if (autoTransBool != 0) {
-    autoTransTimer++
+  // if (autoTransBool != 0) {
+  //   autoTransTimer++
 
-    if (autoTransTimer > chapterData[counter].autoTransition) {
-      counter + autoTransBool
-      autoTransBool = 0
-      { nextChapter() }
-    }
-  }
+  //   setTimeout(() => {
+  //     { nextChapter() }
+  //   }, chapterData[counter].autoTransition);
+
+  //   // if (autoTransTimer > chapterData[counter].autoTransition) {
+  //   //   counter + autoTransBool
+  //   //   autoTransBool = 0
+  //   //   { nextChapter() }
+  //   // }
+  // }
 
   var autoTriggerFire;
-
-
-
 
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
@@ -315,7 +316,7 @@ export default function App({
 
     ramp = true
 
-
+    // console.log('bang')
     // enable arc animation
     if (counter == 2) {
       setIsPlaying(true)
@@ -431,9 +432,70 @@ export default function App({
         
     }
 
-  }
+    
+    // toggle through narrative text text
+    const narSvgText = document.getElementsByClassName('narrativeTextBox') 
+    // console.log(narSvgText)
+    const group = [narSvgText[2],narSvgText[3],narSvgText[4],narSvgText[5]]
+    const groupLen = group.length
 
-    , []);
+    const fullGroup = [narSvgText[0],narSvgText[1],group,narSvgText[6],narSvgText[7],narSvgText[8],narSvgText[9],narSvgText[10]]
+    
+    // console.log(fullGroup)
+
+    for (let i = 0; i < fullGroup.length; i++) {
+      // console.log(fullGroup[i].length)
+
+      // console.log(fullGroup[i].length)
+
+      if (fullGroup[i].length == groupLen){
+
+        
+        for (let li = 0; li < groupLen; li++) {
+          if (counter == narSvgText[i].id){
+
+            let transitions = [2000,6000,13000,21000]
+
+            if (li == 0){
+              fullGroup[i][li].style.display = "inherit"
+            }else{
+              setTimeout(() => {
+                if (li != 0){
+                  fullGroup[i][li-1].style.display = "none"
+                }
+                console.log(fullGroup[i][li].style.display)
+                fullGroup[i][li].style.display = "inherit"
+              }, transitions[li]);  
+            }
+
+     
+          }
+        }
+      }
+      else{
+        let index = narSvgText[i].id
+        if (counter == index){
+          narSvgText[i].style.display = "inherit"
+        }else{
+        narSvgText[i].style.display = 'none'
+        }  
+      }
+      
+    }
+
+
+    // for (let item = 0; item < narSvgText.length; item++) {
+    //   let index = narSvgText[item].id-1
+
+    //   if (counter == index){
+    //     narSvgText[item].style.display = "inherit"
+    //   }
+    //   else{
+    //     narSvgText[item].style.display = 'none'
+    //   }
+    // }
+
+  }, []);
 
 
   // NAVIGATION FORWARD
@@ -544,85 +606,85 @@ export default function App({
 
   const layers = [
 
-    new BitmapLayer({
-      id: 'BitmapLayer',
-      image: './basemaps/CAD/WorldTilesetBlack.jpg',
-      bounds: [[-180, -90, -35000], [-180, 90, -35000], [180, 90, -35000], [180, -90, -35000]],
-      // visible: chapterData[counter].worldTile,
-      opacity: chapterData[counter].worldTile,
-      transitions:{
-      opacity: {
-        duration: 2000,
-        enter: value => [value[0], value[1], value[2], 0] // fade in
-        },
-      }
-      // opacity: opacityHook
-    }),
+    // new BitmapLayer({
+    //   id: 'BitmapLayer',
+    //   image: './basemaps/CAD/WorldTilesetBlack.jpg',
+    //   bounds: [[-180, -90, -35000], [-180, 90, -35000], [180, 90, -35000], [180, -90, -35000]],
+    //   // visible: chapterData[counter].worldTile,
+    //   opacity: chapterData[counter].worldTile,
+    //   transitions:{
+    //   opacity: {
+    //     duration: 2000,
+    //     enter: value => [value[0], value[1], value[2], 0] // fade in
+    //     },
+    //   }
+    //   // opacity: opacityHook
+    // }),
 
-    new BitmapLayer({
-      id: 'saBitmap',
-      image: './basemaps/CAD/SATilesetBlack.jpg',
-      bounds: [[-125.704377, -58.123691], [-125.704377, 37.286326], [-30.290414, 37.286326], [-30.290414, -58.123691]],
-      // visible: chapterData[counter].SaTile,
-      opacity: chapterData[counter].SaTile,
-      transitions:{
-        opacity: {
-          duration: 2000,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
-    }),
+    // new BitmapLayer({
+    //   id: 'saBitmap',
+    //   image: './basemaps/CAD/SATilesetBlack.jpg',
+    //   bounds: [[-125.704377, -58.123691], [-125.704377, 37.286326], [-30.290414, 37.286326], [-30.290414, -58.123691]],
+    //   // visible: chapterData[counter].SaTile,
+    //   opacity: chapterData[counter].SaTile,
+    //   transitions:{
+    //     opacity: {
+    //       duration: 2000,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //     }
+    // }),
 
-    new BitmapLayer({
-      id: 'panamaBitmap',
-      image: './basemaps/BASEMAP-PANAMA - Copy.jpg',
-      bounds: [[-84.071066, 6.204412], [-84.071066, 10.942168], [-75.646334, 10.942168], [-75.646334, 6.204412]],
-      // visible: chapterData[counter].PanamaImg,
-      opacity: chapterData[counter].PanamaImg,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
-    }),
+    // new BitmapLayer({
+    //   id: 'panamaBitmap',
+    //   image: './basemaps/BASEMAP-PANAMA - Copy.jpg',
+    //   bounds: [[-84.071066, 6.204412], [-84.071066, 10.942168], [-75.646334, 10.942168], [-75.646334, 6.204412]],
+    //   // visible: chapterData[counter].PanamaImg,
+    //   opacity: chapterData[counter].PanamaImg,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //     }
+    // }),
 
-    new BitmapLayer({
-      id: 'darienBitmap',
-      image: './basemaps/BASEMAP-DARIEN - Copy.jpg',
-      bounds: [[-77.664696, 8.078343], [-77.664696, 8.789628], [-76.383324, 8.789628], [-76.383324, 8.078343]],
-      // visible: chapterData[counter].DarienImg,
-      opacity: chapterData[counter].DarienImg,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
-    }),
+    // new BitmapLayer({
+    //   id: 'darienBitmap',
+    //   image: './basemaps/BASEMAP-DARIEN - Copy.jpg',
+    //   bounds: [[-77.664696, 8.078343], [-77.664696, 8.789628], [-76.383324, 8.789628], [-76.383324, 8.078343]],
+    //   // visible: chapterData[counter].DarienImg,
+    //   opacity: chapterData[counter].DarienImg,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //     }
+    // }),
 
-    new BitmapLayer({
-      id: 'GuatMexBitmap',
-      image: './basemaps/BASEMAP-GUATMAP - COPY.jpg',
-      bounds: [[-92.168185, 14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
-      // visible: chapterData[counter].GuatMexImg,
-      opacity: chapterData[counter].GuatMexImg,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
-    }),
+    // new BitmapLayer({
+    //   id: 'GuatMexBitmap',
+    //   image: './basemaps/BASEMAP-GUATMAP - COPY.jpg',
+    //   bounds: [[-92.168185, 14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
+    //   // visible: chapterData[counter].GuatMexImg,
+    //   opacity: chapterData[counter].GuatMexImg,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //     }
+    // }),
 
     new PathLayer({
       id: 'accumulatedCost',
