@@ -141,6 +141,7 @@ body {
     user-select: none;
 }
 
+
 .btn {
     color: none;
     background-color: rgba(0, 0, 0, 0);
@@ -158,8 +159,9 @@ body {
     user-select: none;
     font-family: SpeziaWide;
     transition: 0.5s;
-    animation: glow 5s infinite;
 }
+
+
 
 .info{
     color: white;
@@ -179,10 +181,12 @@ body {
 
 }
 
-.btn:hover {
+.nav{
     color: white;
-    -webkit-text-stroke: 0.5px white;
+    opacity: 1;
 }
+
+
 
 .progress {
     background-color: none;
