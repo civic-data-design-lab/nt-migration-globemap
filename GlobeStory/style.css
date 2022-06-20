@@ -134,8 +134,8 @@ body {
     -ms-transform: translate(-50%, -90%);
     transform: translate(-50%, -90%);
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    width: 75%;
+    grid-template-columns: 1fr;
+    width: 95%;
     align-items: center;
     z-index: 3;
     -webkit-touch-callout: none;
@@ -150,7 +150,7 @@ body {
     color: none;
     background-color: rgba(0, 0, 0, 0);
     border: none;
-    font-size: 2.5em;
+    font-size: 4em;
     -webkit-text-stroke: 1px rgb(150, 181, 155);
     transition: 0.25s linear;
     /* animation: glow 8s infinite; */
