@@ -1,4 +1,10 @@
 /* fonts */
+
+@font-face {
+    font-family: Consola;
+    src: url(fonts/consola.ttf);
+  }
+
 @font-face {
     font-family: SpeziaWide;
     src: url(fonts/SpeziaWide-Bold.otf);

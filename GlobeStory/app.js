@@ -473,11 +473,12 @@ export default function App({
         }
       }
       else{
-        let index = narSvgText[i].id
+        console.log("woohoo")
+        let index = fullGroup[i].id
         if (counter == index){
-          narSvgText[i].style.display = "inherit"
+          fullGroup[i].style.display = "inherit"
         }else{
-        narSvgText[i].style.display = 'none'
+        fullGroup[i].style.display = 'none'
         }  
       }
       
@@ -728,34 +729,7 @@ export default function App({
 
     }),
 
-    new TripsLayer({
-      id: 'trips',
-      data: trips,
-      getPath: d => d.path,
-      getTimestamps: d => d.timestamps,
-      getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-      opacity: 1,
-      widthMinPixels: 5,
-      // widthMaxPixels:3,
-      capRounded: true,
-      jointRounded: true,
-      trailLength,
-      currentTime: time,
-      shadowEnabled: false,
-      fadeTrail: true,
-      // visible: chapterData[counter].Trips,
-      opacity: chapterData[counter].Trips,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
 
-    }),
 
 
     // new IconLayer({
@@ -797,7 +771,7 @@ export default function App({
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality.toUpperCase(),
-    getSize: 12,
+    getSize: 11,
     getColor: [180, 235, 190],
     getAngle: 180, 
     getPixelOffset: [-5,-1],
@@ -815,30 +789,65 @@ export default function App({
       }
 
   }),
-// 
-//   new TextLayer({
-//     id: 'text-layer-cost',
-//     data: './data/layers/labels_cost_final.json',
-//     fontFamily: 'SpeziaWide',
-//     pickable: false,
-//     getPosition: d => [d.x, d.y],
-//     getText: d => d.Accum_cost,
-//     getSize: 10,
-//     sizeMinPixels: 10,
-//     sizeMaxPixels: 10,
-//     getColor: [180, 235, 190],
-// //     getAngle: 180, 
-//     getPixelOffset: [-5,-1],
-//     fontWeight: 'bold',
-//     getTextAnchor: 'end',
-//     getAlignmentBaseline: 'bottom',
-//     billboard: true,
-//     visible: chapterData[counter].PanamPath,
-//     parameters: {
-//       depthTest: false
-//     }
-// 
-//   }),
+
+  new TextLayer({
+    id: 'text-layer-cost',
+    data: './data/layers/labels_cost_final.json',
+    fontFamily: 'SpeziaWide',
+    pickable: false,
+    getPosition: d => [d.x, d.y],
+    getText: d => d.Accum_cost,
+    getSize: 15,
+    // sizeMinPixels: 10,
+    // sizeMaxPixels: 10,
+    getColor: [227, 40, 11],
+    getPixelOffset: [-5,-1],
+    // getPixelOffset: [d => (-300+d.x),-1],
+    fontWeight: 'bold',
+    getTextAnchor: 'end',
+    getAlignmentBaseline: 'bottom',
+    billboard: true,
+    opacity: chapterData[counter].CostPath,
+    parameters: {
+      depthTest: false
+    },
+    transitions:{
+      opacity: {
+        duration: 100,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
+
+  }),
+
+  new TripsLayer({
+    id: 'trips',
+    data: trips,
+    getPath: d => d.path,
+    getTimestamps: d => d.timestamps,
+    getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+    opacity: 1,
+    widthMinPixels: 8,
+    // widthMaxPixels:3,
+    capRounded: true,
+    jointRounded: true,
+    trailLength,
+    currentTime: time,
+    shadowEnabled: false,
+    fadeTrail: true,
+    // visible: chapterData[counter].Trips,
+    opacity: chapterData[counter].Trips,
+    parameters: {
+      depthTest: false
+    },
+    transitions:{
+      opacity: {
+        duration: fadeTransDuration,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
+
+  }),
   
 //     new TextLayer({
 //     id: 'text-layer-label',
@@ -880,8 +889,8 @@ export default function App({
       getAlignmentBaseline: 'bottom',
       billboard: true,
       sizeMaxPixels: 1,
-      // visible: chapterData[counter].PanamPath,
-      opacity: chapterData[counter].PanamPath,
+      visible: true,
+      // opacity: chapterData[counter].CostPath,
       parameters: {
         depthTest: false
       },
@@ -894,35 +903,35 @@ export default function App({
 
     }),
 
-    new TextLayer({
-      id: 'text-layer-label',
-      data: './data/layers/labels_cost_final.json',
-      fontFamily: 'SpeziaWide',
-      pickable: false,
-      getPosition: d => [d.x, d.y],
-      getText: d => d.final_lab,
-      getSize: 10,
-      getColor: [180, 235, 190],
-      //     getAngle: 180, 
-      getPixelOffset: [-5, -10],
-      fontWeight: 'bold',
-      getTextAnchor: 'end',
-      getAlignmentBaseline: 'bottom',
-      billboard: true,
-      sizeMaxPixels: 1,
-      // visible: chapterData[counter].PanamPath,
-      opacity: chapterData[counter].PanamPath,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-      }
+    // new TextLayer({
+    //   id: 'text-layer-label',
+    //   data: './data/layers/labels_cost_final.json',
+    //   fontFamily: 'SpeziaWide',
+    //   pickable: false,
+    //   getPosition: d => [d.x, d.y],
+    //   getText: d => d.final_lab,
+    //   getSize: 10,
+    //   getColor: [180, 235, 190],
+    //   //     getAngle: 180, 
+    //   getPixelOffset: [-5, -10],
+    //   fontWeight: 'bold',
+    //   getTextAnchor: 'end',
+    //   getAlignmentBaseline: 'bottom',
+    //   billboard: true,
+    //   sizeMaxPixels: 1,
+    //   // visible: chapterData[counter].PanamPath,
+    //   opacity: chapterData[counter].PanamPath,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //   }
 
-    }),
+    // }),
   ]
 
   const dataLayers = groups.map(

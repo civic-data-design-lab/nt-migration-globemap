@@ -88,4 +88,5 @@
   transition: 0.5s ease-in-out;
   display: none;
   opacity: 1;
+  pointer-events: none;
 }
