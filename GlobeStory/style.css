@@ -1,4 +1,5 @@
 /* fonts */
+
 @font-face {
     font-family: SpeziaWide;
     src: url(fonts/SpeziaWide-Bold.otf);
@@ -127,9 +128,9 @@ body {
     left: 50%;
     -ms-transform: translate(-50%, -90%);
     transform: translate(-50%, -90%);
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    width: 75%;
+    /* display: grid; */
+    /* grid-template-columns: 1fr 1fr; */
+    width: 30%;
     align-items: center;
     z-index: 3;
     -webkit-touch-callout: none;
@@ -144,10 +145,9 @@ body {
     color: none;
     background-color: rgba(0, 0, 0, 0);
     border: none;
-    font-size: 2.5em;
+    font-size: 4em;
     -webkit-text-stroke: 1px rgb(150, 181, 155);
     transition: 0.25s linear;
-    /* animation: glow 8s infinite; */
     text-align: center;
     width: 100%;
     -webkit-touch-callout: none;
@@ -156,6 +156,27 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-family: SpeziaWide;
+    transition: 0.5s;
+    animation: glow 5s infinite;
+}
+
+.info{
+    color: white;
+    font-size: 1em;
+    line-height: 0.25em;
+    transition: 0.25s linear;
+    text-align: center;
+    width: 100%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: SpeziaWide;
+    transition: 0.5s;
+
 }
 
 .btn:hover {

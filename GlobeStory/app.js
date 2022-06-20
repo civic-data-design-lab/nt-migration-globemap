@@ -8,7 +8,7 @@ import { PolygonLayer, TextLayer, PathLayer, GeoJsonLayer, IconLayer, BitmapLaye
 import { TripsLayer } from '@deck.gl/geo-layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
 // import {BitmapLayer} from '@deck.gl/layers';
-import { FlyToInterpolator, LinearInterpolator, ScatterplotLayer } from 'deck.gl';
+import { FlyToInterpolator, LinearInterpolator, ScatterplotLayer, Tesselator } from 'deck.gl';
 import AnimatedArcLayer from './animated-arc-layer';
 import { sliceData, getDate } from './slice-data';
 import { load } from '@loaders.gl/core';
@@ -32,7 +32,7 @@ var ramp = false
 var rampVal = 0;
 var opacityTransitionSpeed = 10
 var fadeTransDuration = 1500;
-
+var startIndicator;
 // Source data CSV
 const DATA_URL = {
   // BUILDINGS:
@@ -291,20 +291,21 @@ export default function App({
     }
   }
 
-  if (autoTransBool != 0) {
-    autoTransTimer++
+  // if (autoTransBool != 0) {
+  //   autoTransTimer++
 
-    if (autoTransTimer > chapterData[counter].autoTransition) {
-      counter + autoTransBool
-      autoTransBool = 0
-      { nextChapter() }
-    }
-  }
+  //   setTimeout(() => {
+  //     { nextChapter() }
+  //   }, chapterData[counter].autoTransition);
+
+  //   // if (autoTransTimer > chapterData[counter].autoTransition) {
+  //   //   counter + autoTransBool
+  //   //   autoTransBool = 0
+  //   //   { nextChapter() }
+  //   // }
+  // }
 
   var autoTriggerFire;
-
-
-
 
   // NAVIGATION FORWARD
   var nextChapter = useCallback(() => {
@@ -313,30 +314,39 @@ export default function App({
     afkTimer = 0
     counter++
 
+
     ramp = true
 
 
-    // enable arc animation
+
+    if (counter == 1){
+
+      if (document.getElementById('info') != null){
+        
+        startIndicator = document.getElementById('info')
+      }
+   
+      document.getElementById('info').style.opacity = 0
+    }
+
+
     if (counter == 2) {
       setIsPlaying(true)
     }
 
-    if(counter <= 3){
-      document.getElementsByClassName('halo')[0].style.display=''
-    }
 
-
-
-    if(counter > 3){
-      document.getElementsByClassName('halo')[0].style.display='none'
-    }
 
 
     // reset arc animation
     if (counter >= chapterData.length) {
       // RESET STORY AFTER COMPLETING NARRATIVE
+      document.getElementById('info').style.opacity = 1
+      // var startMenu = document.getElementById('btnContainer') 
+      // startMenu.insertBefore(startIndicator, startMenu.children[0] )
+
       setIsPlaying(false)
       _reset = true
+    
 
       setInitialViewState({
         latitude: chapterData[startMapIndex].latitude,
@@ -349,6 +359,15 @@ export default function App({
       counter = 0
 
     }
+
+    if(counter <= 3){
+      document.getElementsByClassName('halo')[0].style.display=''
+    }
+
+    if(counter > 3){
+      document.getElementsByClassName('halo')[0].style.display='none'
+    }
+
 
     // CHANGE CAMERA VIEW THROUGH STORY
     if (chapterData[counter].name != 'NaN') {
@@ -431,9 +450,94 @@ export default function App({
         
     }
 
-  }
+    
+    // console.log(chapterData.Narindex[counter])
 
-    , []);
+    // if (chapterData.Narindex != ""){
+    //   const test = document.getElementById('NA-'+[chapterData.Narindex[counter]])
+    //   console.log(test)
+    // }
+
+
+
+    // toggle through narrative text text
+    const narSvgText = document.getElementsByClassName('narrativeTextBox') 
+    const group = [narSvgText[2],narSvgText[3],narSvgText[4],narSvgText[5]]
+
+    
+    for (let item = 0; item < narSvgText.length; item++) {
+      let index = narSvgText[item].id
+
+      if (counter == index){
+        narSvgText[item].style.display = "inherit"
+      }
+      else{
+        narSvgText[item].style.display = 'none'
+      }
+    }
+
+   // const groupLen = group.length
+
+    // const fullGroup = [narSvgText[0],narSvgText[1],group,narSvgText[6],narSvgText[7],narSvgText[8],narSvgText[9],narSvgText[10]]
+    
+    // // console.log(fullGroup)
+
+    // for (let i = 0; i < fullGroup.length; i++) {
+    //   // console.log(fullGroup[i].length)
+
+    //   // console.log(fullGroup[i].length)
+
+    //   if (fullGroup[i].length == groupLen){
+
+        
+    //     for (let li = 0; li < groupLen; li++) {
+    //       if (counter == narSvgText[i-1].id){
+
+    //         let transitions = [2000,6000,13000,21000]
+
+    //         if (li == 0){
+    //           fullGroup[i][li].style.display = "inherit"
+    //         }else{
+    //           setTimeout(() => {
+    //             if (li != 0){
+    //               fullGroup[i][li-1].style.display = "none"
+    //             }
+    //             console.log(fullGroup[i][li].style.display)
+    //             fullGroup[i][li].style.display = "inherit"
+    //           }, transitions[li]);  
+    //         }
+
+     
+    //       }
+    //     }
+    //   }
+    //   else{
+    //     // console.log(i)
+        
+    //     let index = fullGroup[i].id
+    //     console.log(counter + ":" + index)
+    //     console.log(counter+4 + ":" + index)
+    //     if(counter>=3 && counter+3 == parseInt(index)){
+    //      
+    //       fullGroup[i].style.display = "inherit"
+    //     }else if (counter == parseInt(index)){
+    //       // console.log("MATCH FOUND:" + counter + ":" + index)
+    //       fullGroup[i].style.display = "inherit"
+    //     }else{
+    //       // console.log(("MATCH NOT FOUND:" + counter + ":" + index))
+    //     fullGroup[i].style.display = 'none'
+    //     }  
+    //   }
+      
+    // }
+
+
+
+  }, []);
+
+ 
+
+    
 
 
   // NAVIGATION FORWARD
@@ -537,8 +641,23 @@ export default function App({
         
     }
 
+        // toggle through narrative text text
+        const narSvgText = document.getElementsByClassName('narrativeTextBox') 
+        const group = [narSvgText[2],narSvgText[3],narSvgText[4],narSvgText[5]]
+    
+        
+        for (let item = 0; item < narSvgText.length; item++) {
+          let index = narSvgText[item].id
+    
+          if (counter == index){
+            narSvgText[item].style.display = "inherit"
+          }
+          else{
+            narSvgText[item].style.display = 'none'
+          }
+        }
 
-
+  
   }, []);
 
 
@@ -552,7 +671,7 @@ export default function App({
       opacity: chapterData[counter].worldTile,
       transitions:{
       opacity: {
-        duration: 2000,
+        duration: 2500,
         enter: value => [value[0], value[1], value[2], 0] // fade in
         },
       }
@@ -666,34 +785,7 @@ export default function App({
 
     }),
 
-    new TripsLayer({
-      id: 'trips',
-      data: trips,
-      getPath: d => d.path,
-      getTimestamps: d => d.timestamps,
-      getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
-      opacity: 1,
-      widthMinPixels: 5,
-      // widthMaxPixels:3,
-      capRounded: true,
-      jointRounded: true,
-      trailLength,
-      currentTime: time,
-      shadowEnabled: false,
-      fadeTrail: true,
-      // visible: chapterData[counter].Trips,
-      opacity: chapterData[counter].Trips,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
 
-    }),
 
 
     // new IconLayer({
@@ -735,7 +827,7 @@ export default function App({
     pickable: false,
     getPosition: d => [d.lon1, d.lat1],
     getText: d => d.Nationality.toUpperCase(),
-    getSize: 12,
+    getSize: 11,
     getColor: [180, 235, 190],
     getAngle: 180, 
     getPixelOffset: [-5,-1],
@@ -753,30 +845,65 @@ export default function App({
       }
 
   }),
-// 
-//   new TextLayer({
-//     id: 'text-layer-cost',
-//     data: './data/layers/labels_cost_final.json',
-//     fontFamily: 'SpeziaWide',
-//     pickable: false,
-//     getPosition: d => [d.x, d.y],
-//     getText: d => d.Accum_cost,
-//     getSize: 10,
-//     sizeMinPixels: 10,
-//     sizeMaxPixels: 10,
-//     getColor: [180, 235, 190],
-// //     getAngle: 180, 
-//     getPixelOffset: [-5,-1],
-//     fontWeight: 'bold',
-//     getTextAnchor: 'end',
-//     getAlignmentBaseline: 'bottom',
-//     billboard: true,
-//     visible: chapterData[counter].PanamPath,
-//     parameters: {
-//       depthTest: false
-//     }
-// 
-//   }),
+
+  new TextLayer({
+    id: 'text-layer-cost',
+    data: './data/layers/labels_cost_final.json',
+    fontFamily: 'SpeziaWide',
+    pickable: false,
+    getPosition: d => [d.x, d.y],
+    getText: d => d.Accum_cost,
+    getSize: 15,
+    // sizeMinPixels: 10,
+    // sizeMaxPixels: 10,
+    getColor: [255, 255, 255],
+    getPixelOffset: [-5,-1],
+    // getPixelOffset: [d => (-300+d.x),-1],
+    fontWeight: 'bold',
+    getTextAnchor: 'end',
+    getAlignmentBaseline: 'bottom',
+    billboard: true,
+    // opacity: chapterData[counter].CostPath,
+    parameters: {
+      depthTest: false
+    },
+   opacity: chapterData[counter].CostPath,
+    transitions:{
+      opacity: {
+        duration: fadeTransDuration,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
+  }),
+
+  new TripsLayer({
+    id: 'trips',
+    data: trips,
+    getPath: d => d.path,
+    getTimestamps: d => d.timestamps,
+    getColor: d => (d.vendor === 0 ? theme.trailColor0 : theme.trailColor1),
+    opacity: 1,
+    widthMinPixels: 8,
+    // widthMaxPixels:3,
+    capRounded: true,
+    jointRounded: true,
+    trailLength,
+    currentTime: time,
+    shadowEnabled: false,
+    fadeTrail: true,
+    // visible: chapterData[counter].Trips,
+    opacity: chapterData[counter].Trips,
+    parameters: {
+      depthTest: false
+    },
+    transitions:{
+      opacity: {
+        duration: fadeTransDuration,
+        enter: value => [value[0], value[1], value[2], 0] // fade in
+        },
+      }
+
+  }),
   
 //     new TextLayer({
 //     id: 'text-layer-label',
@@ -802,65 +929,65 @@ export default function App({
 
 //     }),
 
-    new TextLayer({
-      id: 'text-layer-cost',
-      data: './data/layers/labels_cost_final.json',
-      fontFamily: 'SpeziaWide',
-      pickable: false,
-      getPosition: d => [d.x, d.y],
-      getText: d => d.Accum_cost,
-      getSize: 10,
-      getColor: [180, 235, 190],
-      //     getAngle: 180, 
-      getPixelOffset: [-5, -1],
-      fontWeight: 'bold',
-      getTextAnchor: 'end',
-      getAlignmentBaseline: 'bottom',
-      billboard: true,
-      sizeMaxPixels: 1,
-      // visible: chapterData[counter].PanamPath,
-      opacity: chapterData[counter].PanamPath,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-        }
+    // new TextLayer({
+    //   id: 'text-layer-cost',
+    //   data: './data/layers/labels_cost_final.json',
+    //   fontFamily: 'SpeziaWide',
+    //   pickable: false,
+    //   getPosition: d => [d.x, d.y],
+    //   getText: d => d.Accum_cost,
+    //   getSize: 10,
+    //   getColor: [180, 235, 190],
+    //   //     getAngle: 180, 
+    //   getPixelOffset: [-5, -1],
+    //   fontWeight: 'bold',
+    //   getTextAnchor: 'end',
+    //   getAlignmentBaseline: 'bottom',
+    //   billboard: true,
+    //   sizeMaxPixels: 1,
+    //   visible: true,
+    //   // opacity: chapterData[counter].CostPath,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //     }
 
-    }),
+    // }),
 
-    new TextLayer({
-      id: 'text-layer-label',
-      data: './data/layers/labels_cost_final.json',
-      fontFamily: 'SpeziaWide',
-      pickable: false,
-      getPosition: d => [d.x, d.y],
-      getText: d => d.final_lab,
-      getSize: 10,
-      getColor: [180, 235, 190],
-      //     getAngle: 180, 
-      getPixelOffset: [-5, -10],
-      fontWeight: 'bold',
-      getTextAnchor: 'end',
-      getAlignmentBaseline: 'bottom',
-      billboard: true,
-      sizeMaxPixels: 1,
-      // visible: chapterData[counter].PanamPath,
-      opacity: chapterData[counter].PanamPath,
-      parameters: {
-        depthTest: false
-      },
-      transitions:{
-        opacity: {
-          duration: fadeTransDuration,
-          enter: value => [value[0], value[1], value[2], 0] // fade in
-          },
-      }
+    // new TextLayer({
+    //   id: 'text-layer-label',
+    //   data: './data/layers/labels_cost_final.json',
+    //   fontFamily: 'SpeziaWide',
+    //   pickable: false,
+    //   getPosition: d => [d.x, d.y],
+    //   getText: d => d.final_lab,
+    //   getSize: 10,
+    //   getColor: [180, 235, 190],
+    //   //     getAngle: 180, 
+    //   getPixelOffset: [-5, -10],
+    //   fontWeight: 'bold',
+    //   getTextAnchor: 'end',
+    //   getAlignmentBaseline: 'bottom',
+    //   billboard: true,
+    //   sizeMaxPixels: 1,
+    //   // visible: chapterData[counter].PanamPath,
+    //   opacity: chapterData[counter].PanamPath,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   transitions:{
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //       },
+    //   }
 
-    }),
+    // }),
   ]
 
   const dataLayers = groups.map(
@@ -927,7 +1054,8 @@ export default function App({
         <div id="description"></div>
       </div>
       <div className="btnContainer" id='btnContainer'>
-        <div className='btn' onClick={prevChapter}>◀</div>
+        {/* <div className='btn' onClick={prevChapter}>◀</div> */}
+        <div className='info' id="info" >TOUCH TO BEGIN</div>
         <div className='btn' onClick={nextChapter}>▶</div>
       </div>
     </div>

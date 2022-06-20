@@ -71,12 +71,24 @@
 
 
 .narrativeBox,.narrativeDrawings{
-    width: 100%;
-    height: 100%;
+    width: 101%;
+    height: auto;
     /* border: 3px solid tomato; */
     transition: 0.5s ease-in-out;
     display: none;
     /* position: absolute; */
     /* z-index: 5; */
     opacity: 0;
+
+
+}
+
+.narrativeTextBox{
+  width: 100%;
+  height: auto;
+  /* border: 3px solid tomato; */
+  transition: 0.5s ease-in-out;
+  display: none;
+  opacity: 1;
+  pointer-events: none;
 }
