@@ -17,11 +17,11 @@ vTimestamp = mix(instanceTargetTimestamp, instanceSourceTimestamp, segmentRatio)
 uniform vec2 timeRange;
 varying float vTimestamp;
 `,
-//       'fs:#main-start': `\
-// if (vTimestamp < timeRange.x || vTimestamp > timeRange.y) {
-//   discard;
-// }
-// `,
+      'fs:#main-start': `\
+if ( vTimestamp > timeRange.y) {
+  discard;
+}
+`,
       'fs:DECKGL_FILTER_COLOR': `\
 color.a *= (vTimestamp - timeRange.y) / (timeRange.x - timeRange.y);
 `
