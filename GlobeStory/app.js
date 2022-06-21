@@ -1046,7 +1046,7 @@ export default function App({
             min={0}
             max={endTime}
             value={currentTime}
-            animationSpeed={TIME_WINDOW * 0.35}
+            animationSpeed={TIME_WINDOW * 0.5}
             //           formatLabel={formatLabel}
             onChange={setCurrentTime}
             isPlaying={isPlaying}
