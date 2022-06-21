@@ -43,10 +43,8 @@ let startPhrase = '"TOUCH TO START"'
 
 // AFK Variables
 let AFK = false
-let wasAFK = false;
-const idleLimit = 180000;
+const idleLimit = 20000;
 let afkTimeout;
-// let fromPrev = false
 
 // Animation Control
 let animArcIndex = false
@@ -227,7 +225,6 @@ export default function App({
   let goForward = function userAdvance() {
     if (AFK) {
       AFK = false
-      wasAFK = counter
       counter = chapterData.length
       globalButtonTimeout = false
     }
@@ -246,21 +243,11 @@ export default function App({
       let transferCounter = counter //used to hold initial counter variable before flipping from i=0 > -1
       counter++ //iterate through chapters
 
-      // if (fromPrev)
-      // {
-
-      //   counter = counter - 1
-      //   transferCounter = chapterData.length-1
-      //   console.log(counter + "counter" + transferCounter + "from prev")
-      //   // transferCounter = transferCounter-1
-      //   fromPrev = false
-      // }
-
-
   
       // reset arc animation
       if (counter >= chapterData.length) {
         // RESET STORY AFTER COMPLETING NARRATIVE
+        // document.getElementById('info').innerHTML = startPhrase
         setIsPlaying(false)
         _reset = true
         counter = 0
@@ -277,11 +264,8 @@ export default function App({
         if (!AFK) {
           let navBtns = document.getElementsByClassName('btn')
           for (let btn = 0; btn < navBtns.length; btn++) {
-            if(chapterData[counter].autoTransition == ""){
-              navBtns[btn].style.opacity = 1
-              navBtns[btn].style.pointerEvents = ''
-            }
-      
+            navBtns[btn].style.opacity = 1
+            navBtns[btn].style.pointerEvents = ''
           }
         }
       }, chapterData[counter].duration);
@@ -322,10 +306,8 @@ export default function App({
       if (AFK == true) {
         setTimeout(() => {
           // console.log(counter + "auto counter")
-          // fromPrev = false
           if(counter == chapterData.length-1){
             counter = 0
-            // fromPrev = true
           }
 
           nextChapter()
@@ -358,7 +340,6 @@ export default function App({
           transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
         })
       }
-
 
       //Toggle Arrows
       arrowInit = true;
@@ -421,13 +402,7 @@ export default function App({
 
       // SVG OVERLAY OFF
       if (chapterData[counter].svgOverlay == null) {
-
-        let indexWrap = transferCounter
-        if(wasAFK != false){
-          indexWrap = wasAFK
-        }
-
-        let searchIndex = chapterData[indexWrap].svgOverlay
+        let searchIndex = chapterData[transferCounter].svgOverlay
 
         if (svgNarrative[searchIndex - 1] != null) { //subtract 1 to consider index starts at 0 while list starts at 1
           var selectBox = svgNarrative[searchIndex - 1]
@@ -463,7 +438,6 @@ export default function App({
         }
       
       globalButtonTimeout = false
-      wasAFK = false;
     }
   }, []);
 
@@ -474,7 +448,23 @@ export default function App({
       globalButtonTimeout = true;
     
       let transferCounter = counter //used to hold initial counter variable before flipping from i=0 > -1
-      counter--
+      counter--;
+
+      // const fastTransitions = []
+
+      // for (let ch = 0; ch < chapterData.length; ch++) {
+        
+      //   if(chapterData[ch].duration == 0)
+      //   {
+      //     fastTransitions.push(chapterData[ch])
+      //   }
+      //   else{
+      //     fastTransitions.push(chapterData[ch]/2)
+      //   }
+      
+      // }
+
+      // console.log(fastTransitions)
 
       // flip counters
       if (counter < 0) {
@@ -492,12 +482,9 @@ export default function App({
       setTimeout(() => { 
         if (!AFK) {
           let navBtns = document.getElementsByClassName('btn')
-          
           for (let btn = 0; btn < navBtns.length; btn++) {
-            if(chapterData[counter].autoTransition == ""){
-              navBtns[btn].style.opacity = 1
-              navBtns[btn].style.pointerEvents = ''
-            }
+            navBtns[btn].style.opacity = 1
+            navBtns[btn].style.pointerEvents = ''
 
           }
         }
@@ -534,10 +521,8 @@ export default function App({
       if (AFK == true) {
         setTimeout(() => {
           // console.log(counter + "auto counter")
-          // fromPrev = false
           if(counter == chapterData.length-1){
             counter = 0
-            // fromPrev = true
           }
 
           nextChapter()
@@ -587,7 +572,7 @@ export default function App({
           _flare.innerHTML = "|"
         }
 
-        var typeSpeed = 50;
+        var typeSpeed = 100;
         header.innerHTML = ""
         sText.innerHTML = ""
         var headText = chapterData[counter].header
@@ -633,10 +618,15 @@ export default function App({
       // SVG OVERLAY OFF
       if (chapterData[transferCounter].svgOverlay != null) {
         let searchIndex = chapterData[transferCounter].svgOverlay
+        
+        // console.log("transfer count: " + transferCounter + "SEARCH INDEX:" + searchIndex)
+        console.log(searchIndex + "search index")
 
         if (svgNarrative[searchIndex-1] != null) {
           let selectBox = svgNarrative[searchIndex-1]
           selectBox.style.opacity = 0
+
+          console.log(selectBox + "select box")
 
           setTimeout(() => {
             selectBox.style.display = "none"
@@ -1013,7 +1003,7 @@ export default function App({
         getTargetTimestamp: d => d.time2,
         getTilt: d => d.tilt,
         getHeight: d => d.randHeight,
-        getWidth: 1,
+        getWidth: 2,
         timeRange,
         getTargetColor: [215, 215, 0, [25]],
         getSourceColor: [215, 215, 0, [25]],
