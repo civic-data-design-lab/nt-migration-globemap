@@ -44,7 +44,7 @@ let startPhrase = '"TOUCH TO START"'
 // AFK Variables
 let AFK = false
 let wasAFK = false;
-const idleLimit = 180000;
+const idleLimit = 18000;
 let afkTimeout;
 // let fromPrev = false
 
@@ -311,7 +311,7 @@ export default function App({
           clearTimeout(afkTimeout)
         }
 
-        //restard idle timer
+        //restart idle timer
         afkTimeout = setTimeout(() => {
           AFK = true
           nextChapter()
@@ -327,9 +327,13 @@ export default function App({
             counter = 0
             // fromPrev = true
           }
-
           nextChapter()
         }, chapterData[counter].duration + chapterData[counter].IdleDuration);
+      }
+
+      if(counter < animArcIndex){
+        setIsPlaying(false)
+        _reset = true
       }
 
       //index to start animated arcs
@@ -774,6 +778,61 @@ export default function App({
 
     }),
 
+    // new PathLayer({
+    //   id: 'tempTest',
+    //   data: "./data/layers/labels_cost_final copy.json",
+    //   widthScale: 5,
+    //   widthMinPixels: 2,
+    //   getPath: d => [[d.x,d.y],[d.x2,d.y2]],
+    //   getColor: [255, 255, 255, 255],
+    //   getDashArray: [4, 5],
+    //   dashJustified: false,
+    //   extensions: [new PathStyleExtension({ highPrecisionDash: true })],
+    //   // visible: chapterData[counter].PanamPath,
+    //   // opacity: chapterData[counter].PanamPath,
+    //   // transitions: {
+    //   //   opacity: {
+    //   //     duration: fadeTransDuration,
+    //   //     enter: value => [value[0], value[1], value[2], 0] // fade in
+    //   //   },
+    //   // }
+    //   parameters: {
+    //     depthTest: false
+    //   },
+
+    // }),
+
+    // new TextLayer({
+    //   id: 'test-text-layer-cost',
+    //   data: "./data/layers/labels_cost_final copy.json",
+    //   fontFamily: 'SpeziaWide',
+    //   pickable: false,
+    //   getPosition: d => [d.x2, d.y2],
+    //   getText: d => d.Accum_cost,
+    //   getSize: 15,
+    //   // sizeMinPixels: 10,
+    //   // sizeMaxPixels: 10,
+    //   getColor: [255, 255, 255],
+    //   getPixelOffset: [-5, -1],
+    //   // getPixelOffset: [d => (-300+d.x),-1],
+    //   fontWeight: 'bold',
+    //   getTextAnchor: 'end',
+    //   getAlignmentBaseline: 'bottom',
+    //   billboard: true,
+    //   // opacity: chapterData[counter].CostPath,
+    //   parameters: {
+    //     depthTest: false
+    //   },
+    //   // opacity: chapterData[counter].CostPath,
+    //   transitions: {
+    //     opacity: {
+    //       duration: fadeTransDuration,
+    //       enter: value => [value[0], value[1], value[2], 0] // fade in
+    //     },
+    //   }
+    // }),
+
+
     new PathLayer({
       id: 'Highway',
       data: DATA_URL.HIGHWAY,
@@ -791,6 +850,7 @@ export default function App({
           duration: fadeTransDuration,
           enter: value => [value[0], value[1], value[2], 0] // fade in
         },
+        
       }
 
     }),

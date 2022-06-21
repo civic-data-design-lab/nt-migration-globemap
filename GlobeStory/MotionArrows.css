@@ -93,8 +93,6 @@ svg {
   transform: translateX(-50%) translateY(-50%);
 }
 
-
-
 .arrows{
  fill:rgba(219, 191, 35, 0.815);
  stroke: rgba(0, 0, 0, 0.699);
