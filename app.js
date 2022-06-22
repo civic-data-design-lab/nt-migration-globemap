@@ -8,11 +8,11 @@ import { TripsLayer } from '@deck.gl/geo-layers';
 import { _GlobeView as GlobeView } from '@deck.gl/core';
 // import {BitmapLayer} from '@deck.gl/layers';
 import { FlyToInterpolator, LinearInterpolator, ScatterplotLayer, Tesselator } from 'deck.gl';
-import AnimatedArcLayer from './animated-arc-layer';
-import { sliceData, getDate } from './slice-data';
+import AnimatedArcLayer from './scripts/animated-arc-layer';
+import { sliceData, getDate } from './scripts/slice-data';
 import { load } from '@loaders.gl/core';
 import { CSVLoader } from '@loaders.gl/csv';
-import RangeInput from './range-input';
+import RangeInput from './scripts/range-input';
 import { PathStyleExtension } from '@deck.gl/extensions';
 
 
@@ -20,17 +20,17 @@ import { PathStyleExtension } from '@deck.gl/extensions';
 const DATA_URL = {
   // BUILDINGS:
   // 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/trips/buildings.json', // eslint-disable-line
-  TRIPS: './data/PANAM-ULTIMATE.json', // eslint-disable-line
-  PATH_COST: './data/PANAM-NEW.json',
-  HIGHWAY: './data/Highway.json',
-  SPRITE: "./svg/spriteSheet.png",
-  SPRITE_MAP: "./svg/sprite.json"
+  TRIPS: './pages/data/PANAM-ULTIMATE.json', // eslint-disable-line
+  PATH_COST: './pages/data/PANAM-NEW.json',
+  HIGHWAY: './pages/data/Highway.json',
+  SPRITE: "./pages/svg/spriteSheet.png",
+  SPRITE_MAP: "./pages/svg/sprite.json"
 };
 
 // GLOBAL VARIABLES  //
 
 // chapters
-const chapterData = require('./mapChapters.json');
+const chapterData = require('./pages/mapChapters.json');
 let counter = 0;
 let startMapIndex = false
 
@@ -44,9 +44,8 @@ let startPhrase = '"TOUCH TO START"'
 // AFK Variables
 let AFK = false
 let wasAFK = false;
-const idleLimit = 18000;
+const idleLimit = 180000;
 let afkTimeout;
-// let fromPrev = false
 
 // Animation Control
 let animArcIndex = false
@@ -60,7 +59,7 @@ let arrowTimer = 0
 let fadeTransDuration = 1500;
 
 //DECK GL Props 
-const DATA_GLOBE = './data';
+const DATA_GLOBE = './pages/data';
 const transition = new FlyToInterpolator()
 const TIME_WINDOW = 50; // 15 minutes
 const ambientLight = new AmbientLight({
@@ -110,7 +109,6 @@ function toggleArrows(jsonSource, index, bool) {
 
     if (zooms[i] != 1) {
       for (let v = 0; v < shape.length; v++) {
-        // console.log(shape)
         shape[v].style.opacity = 0
       }
 
@@ -246,18 +244,6 @@ export default function App({
       let transferCounter = counter //used to hold initial counter variable before flipping from i=0 > -1
       counter++ //iterate through chapters
 
-      // if (fromPrev)
-      // {
-
-      //   counter = counter - 1
-      //   transferCounter = chapterData.length-1
-      //   console.log(counter + "counter" + transferCounter + "from prev")
-      //   // transferCounter = transferCounter-1
-      //   fromPrev = false
-      // }
-
-
-  
       // reset arc animation
       if (counter >= chapterData.length) {
         // RESET STORY AFTER COMPLETING NARRATIVE
@@ -321,11 +307,8 @@ export default function App({
 
       if (AFK == true) {
         setTimeout(() => {
-          // console.log(counter + "auto counter")
-          // fromPrev = false
           if(counter == chapterData.length-1){
             counter = 0
-            // fromPrev = true
           }
           nextChapter()
         }, chapterData[counter].duration + chapterData[counter].IdleDuration);
@@ -362,7 +345,6 @@ export default function App({
           transitionEasing: t => (0.76 * t, 0 * t, 0.24 * t, 1 * t),
         })
       }
-
 
       //Toggle Arrows
       arrowInit = true;
@@ -537,11 +519,8 @@ export default function App({
 
       if (AFK == true) {
         setTimeout(() => {
-          // console.log(counter + "auto counter")
-          // fromPrev = false
           if(counter == chapterData.length-1){
             counter = 0
-            // fromPrev = true
           }
 
           nextChapter()
@@ -679,9 +658,8 @@ export default function App({
 
     new BitmapLayer({
       id: 'BitmapLayer',
-      image: './basemaps/CAD/WorldTilesetBlack.jpg',
+      image: './pages/basemaps/CAD/WorldTilesetBlack.jpg',
       bounds: [[-180, -90, -35000], [-180, 90, -35000], [180, 90, -35000], [180, -90, -35000]],
-      // visible: chapterData[counter].worldTile,
       opacity: chapterData[counter].worldTile,
       transitions: {
         opacity: {
@@ -694,9 +672,8 @@ export default function App({
 
     new BitmapLayer({
       id: 'saBitmap',
-      image: './basemaps/CAD/SATilesetBlack.jpg',
+      image: './pages/basemaps/CAD/SATilesetBlack.jpg',
       bounds: [[-125.704377, -58.123691], [-125.704377, 37.286326], [-30.290414, 37.286326], [-30.290414, -58.123691]],
-      // visible: chapterData[counter].SaTile,
       opacity: chapterData[counter].SaTile,
       transitions: {
         opacity: {
@@ -708,9 +685,8 @@ export default function App({
 
     new BitmapLayer({
       id: 'panamaBitmap',
-      image: './basemaps/BASEMAP-PANAMA - Copy.jpg',
+      image: './pages/basemaps/BASEMAP-PANAMA - Copy.jpg',
       bounds: [[-84.071066, 6.204412], [-84.071066, 10.942168], [-75.646334, 10.942168], [-75.646334, 6.204412]],
-      // visible: chapterData[counter].PanamaImg,
       opacity: chapterData[counter].PanamaImg,
       parameters: {
         depthTest: false
@@ -725,9 +701,8 @@ export default function App({
 
     new BitmapLayer({
       id: 'darienBitmap',
-      image: './basemaps/BASEMAP-DARIEN - Copy.jpg',
+      image: './pages/basemaps/BASEMAP-DARIEN - Copy.jpg',
       bounds: [[-77.664696, 8.078343], [-77.664696, 8.789628], [-76.383324, 8.789628], [-76.383324, 8.078343]],
-      // visible: chapterData[counter].DarienImg,
       opacity: chapterData[counter].DarienImg,
       parameters: {
         depthTest: false
@@ -742,9 +717,8 @@ export default function App({
 
     new BitmapLayer({
       id: 'GuatMexBitmap',
-      image: './basemaps/BASEMAP-GUATMAP - COPY.jpg',
+      image: './pages/basemaps/BASEMAP-GUATMAP - COPY.jpg',
       bounds: [[-92.168185, 14.663715], [-92.168185, 14.692483], [-92.116985, 14.692483], [-92.116985, 14.663715]],
-      // visible: chapterData[counter].GuatMexImg,
       opacity: chapterData[counter].GuatMexImg,
       parameters: {
         depthTest: false
@@ -778,61 +752,6 @@ export default function App({
 
     }),
 
-    // new PathLayer({
-    //   id: 'tempTest',
-    //   data: "./data/layers/labels_cost_final copy.json",
-    //   widthScale: 5,
-    //   widthMinPixels: 2,
-    //   getPath: d => [[d.x,d.y],[d.x2,d.y2]],
-    //   getColor: [255, 255, 255, 255],
-    //   getDashArray: [4, 5],
-    //   dashJustified: false,
-    //   extensions: [new PathStyleExtension({ highPrecisionDash: true })],
-    //   // visible: chapterData[counter].PanamPath,
-    //   // opacity: chapterData[counter].PanamPath,
-    //   // transitions: {
-    //   //   opacity: {
-    //   //     duration: fadeTransDuration,
-    //   //     enter: value => [value[0], value[1], value[2], 0] // fade in
-    //   //   },
-    //   // }
-    //   parameters: {
-    //     depthTest: false
-    //   },
-
-    // }),
-
-    // new TextLayer({
-    //   id: 'test-text-layer-cost',
-    //   data: "./data/layers/labels_cost_final copy.json",
-    //   fontFamily: 'SpeziaWide',
-    //   pickable: false,
-    //   getPosition: d => [d.x2, d.y2],
-    //   getText: d => d.Accum_cost,
-    //   getSize: 15,
-    //   // sizeMinPixels: 10,
-    //   // sizeMaxPixels: 10,
-    //   getColor: [255, 255, 255],
-    //   getPixelOffset: [-5, -1],
-    //   // getPixelOffset: [d => (-300+d.x),-1],
-    //   fontWeight: 'bold',
-    //   getTextAnchor: 'end',
-    //   getAlignmentBaseline: 'bottom',
-    //   billboard: true,
-    //   // opacity: chapterData[counter].CostPath,
-    //   parameters: {
-    //     depthTest: false
-    //   },
-    //   // opacity: chapterData[counter].CostPath,
-    //   transitions: {
-    //     opacity: {
-    //       duration: fadeTransDuration,
-    //       enter: value => [value[0], value[1], value[2], 0] // fade in
-    //     },
-    //   }
-    // }),
-
-
     new PathLayer({
       id: 'Highway',
       data: DATA_URL.HIGHWAY,
@@ -855,44 +774,9 @@ export default function App({
 
     }),
 
-
-
-
-    // new IconLayer({
-    //   id: 'icon-layer2',
-    //   data: DATA_URL.SPRITE_MAP,
-    //   pickable: true,
-    //   // iconAtlas and iconMapping are required
-    //   // getIcon: return a string
-    //   iconAtlas: DATA_URL.SPRITE,
-    //   iconMapping: ICON_MAPPING2,
-    //   getIcon: d => d.frames.frame,
-    //   mask: false,
-    //   sizeScale: 15,
-    //   getPosition: d => d.frames.coords,
-    //   getSize: 500,
-    //   // getColor: d => [Math.sqrt(d.exits), 140, 0]
-    // }),
-
-    // new IconLayer({
-    //     id: 'icon-layer',
-    //     data,
-    //     pickable: true,
-    //     // iconAtlas and iconMapping are required
-    //     // getIcon: return a string
-    //     iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
-    //     iconMapping: ICON_MAPPING,
-    //     getIcon: d => 'marker',
-
-    //     sizeScale: 15,
-    //     getPosition: d => d.coordinates,
-    //     getSize: d => 5,
-    //     getColor: d => [Math.sqrt(d.exits), 140, 0]
-    //   }),
-
     new TextLayer({
       id: 'text-country',
-      data: './data/layers/arrF.json',
+      data: './pages/data/layers/arrF.json',
       fontFamily: 'SpeziaWide',
       pickable: false,
       getPosition: d => [d.lon1, d.lat1],
@@ -918,7 +802,7 @@ export default function App({
 
     new TextLayer({
       id: 'text-layer-cost',
-      data: './data/layers/labels_cost_final.json',
+      data: './pages/data/layers/labels_cost_final.json',
       fontFamily: 'SpeziaWide',
       pickable: false,
       getPosition: d => [d.x, d.y],
@@ -974,90 +858,6 @@ export default function App({
       }
 
     }),
-
-    //     new TextLayer({
-    //     id: 'text-layer-label',
-    //     data: './data/layers/labels_cost_final.json',
-    //     fontFamily: 'SpeziaWide',
-    //     pickable: false,
-    //     getPosition: d => [d.x, d.y],
-    //     getText: d => d.final_lab,
-    //     getSize: 10,
-    //     sizeMinPixels: 10,
-    //     sizeMaxPixels: 10,
-    //     getColor: [180, 235, 190],
-    // //     getAngle: 180, 
-    //     getPixelOffset: [-5,-10],
-    //     fontWeight: 'bold',
-    //     getTextAnchor: 'end',
-    //     getAlignmentBaseline: 'bottom',
-    //     billboard: true,
-    //     visible: chapterData[counter].PanamPath,
-    //     parameters: {
-    //       depthTest: false
-    //     }
-
-    //     }),
-
-    // new TextLayer({
-    //   id: 'text-layer-cost',
-    //   data: './data/layers/labels_cost_final.json',
-    //   fontFamily: 'SpeziaWide',
-    //   pickable: false,
-    //   getPosition: d => [d.x, d.y],
-    //   getText: d => d.Accum_cost,
-    //   getSize: 10,
-    //   getColor: [180, 235, 190],
-    //   //     getAngle: 180, 
-    //   getPixelOffset: [-5, -1],
-    //   fontWeight: 'bold',
-    //   getTextAnchor: 'end',
-    //   getAlignmentBaseline: 'bottom',
-    //   billboard: true,
-    //   sizeMaxPixels: 1,
-    //   visible: true,
-    //   // opacity: chapterData[counter].CostPath,
-    //   parameters: {
-    //     depthTest: false
-    //   },
-    //   transitions:{
-    //     opacity: {
-    //       duration: fadeTransDuration,
-    //       enter: value => [value[0], value[1], value[2], 0] // fade in
-    //       },
-    //     }
-
-    // }),
-
-    // new TextLayer({
-    //   id: 'text-layer-label',
-    //   data: './data/layers/labels_cost_final.json',
-    //   fontFamily: 'SpeziaWide',
-    //   pickable: false,
-    //   getPosition: d => [d.x, d.y],
-    //   getText: d => d.final_lab,
-    //   getSize: 10,
-    //   getColor: [180, 235, 190],
-    //   //     getAngle: 180, 
-    //   getPixelOffset: [-5, -10],
-    //   fontWeight: 'bold',
-    //   getTextAnchor: 'end',
-    //   getAlignmentBaseline: 'bottom',
-    //   billboard: true,
-    //   sizeMaxPixels: 1,
-    //   // visible: chapterData[counter].PanamPath,
-    //   opacity: chapterData[counter].PanamPath,
-    //   parameters: {
-    //     depthTest: false
-    //   },
-    //   transitions:{
-    //     opacity: {
-    //       duration: fadeTransDuration,
-    //       enter: value => [value[0], value[1], value[2], 0] // fade in
-    //       },
-    //   }
-
-    // }),
   ]
 
   const dataLayers = groups.map(
@@ -1078,12 +878,6 @@ export default function App({
         getTargetColor: [215, 215, 0, [25]],
         getSourceColor: [215, 215, 0, [25]],
         opacity: chapterData[counter].AnimatedArcs,
-        // transitions:{
-        //   opacity: {
-        //     duration: fadeTransDuration,
-        //     enter: value => [value[0], value[1], value[2], 0] // fade in
-        //     },
-        // }
       }),
 
   )
@@ -1113,9 +907,7 @@ export default function App({
             reset={_reset}
 
           />)}
-        {/* <StaticMap reuseMaps mapStyle={mapStyle} preventStyleDiffing={true} /> */}
       </DeckGL>
-      {/* <div className="halo front" style={width=20 +'vh'}></div> */}
       <div id='narrativeImg'></div>
       <div id='narrativeContainer'>
         <span id='narrativeText' >DISTANCE UNKNOWN</span><span id='flare'>|</span>

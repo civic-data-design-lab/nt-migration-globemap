@@ -2,15 +2,14 @@
 
 @font-face {
     font-family: SpeziaWide;
-    src: url(fonts/SpeziaWide-Bold.otf);
+    src: url(/styles/fonts/SpeziaWide-Bold.otf);
   }
 
 @font-face {
     font-family: SpeziaThin;
-    src: url(fonts/SpeziaCompleteUprightTrial.woff);
+    src: url(/styles/fonts/SpeziaCompleteUprightTrial.woff);
+    
 }
-
-
 
 @keyframes glow {
     0% {
@@ -110,15 +109,12 @@ body {
     width: 100vw;
     height: 100vh;
     pointer-events: none;
-    background-image: url("img/placeholder.png");
+    background-image: url("./pages/img/placeholder.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     transition: 1.5s ease-in-out;
     opacity: 1;
-
-    /* border: 3px solid blue; */
-
 }
 
 #btnContainer {
@@ -141,11 +137,6 @@ body {
     /* margin-left: 5%; */
     /* border: 3px solid red; */
 }
-
-#btnContainer *{
-    /* border: 3px solid green; */
-}
-
 
 .btn {
     color: none;
